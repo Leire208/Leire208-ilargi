@@ -8,9 +8,12 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
 
 
-  const [user, setUser] = useState(()=>{
+  const [user, setUserState] = useState(()=>{
 
-    const saved = localStorage.getItem("ilargi-user");
+
+    const saved = localStorage.getItem(
+      "ilargi-user"
+    );
 
 
     return saved
@@ -21,7 +24,21 @@ export function UserProvider({ children }) {
 
           name: "Leire",
 
-          career: "Universidad"
+          career: "Universidad",
+
+          university: "",
+
+          photo: "",
+
+          settings: {
+
+            notifications: true,
+
+            motivation: true,
+
+            reminders: true
+
+          }
 
         };
 
@@ -30,15 +47,29 @@ export function UserProvider({ children }) {
 
 
 
+
+
   function updateUser(data){
 
 
-    setUser(data);
+    const updated = {
+
+      ...user,
+
+      ...data
+
+    };
+
+
+    setUserState(updated);
 
 
     localStorage.setItem(
+
       "ilargi-user",
-      JSON.stringify(data)
+
+      JSON.stringify(updated)
+
     );
 
 
@@ -46,32 +77,82 @@ export function UserProvider({ children }) {
 
 
 
+
+
+  function updateSettings(settings){
+
+
+    const updated = {
+
+
+      ...user,
+
+
+      settings:{
+
+
+        ...user.settings,
+
+
+        ...settings
+
+
+      }
+
+
+    };
+
+
+    updateUser(updated);
+
+
+  }
+
+
+
+
+
   return (
+
 
     <UserContext.Provider
 
+
       value={{
+
 
         user,
 
-        setUser:updateUser
+        updateUser,
+
+        updateSettings
+
 
       }}
 
+
     >
+
 
       {children}
 
+
     </UserContext.Provider>
 
+
   );
+
 
 }
 
 
 
+
+
 export function useUser(){
 
+
   return useContext(UserContext);
+
 
 }

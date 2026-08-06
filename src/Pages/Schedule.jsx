@@ -1,16 +1,38 @@
-function Schedule(){
+import SkyBackground from "../Components/SkyBackground";
+import WeekGrid from "../Components/Schedule/WeekGrid";
 
-return (
+function Schedule() {
 
-<div className="p-8">
+  return (
 
-<h1 className="text-3xl">
-Horario
-</h1>
+    <SkyBackground>
 
-</div>
+      <main
 
-);
+        className="
+          min-h-screen
+          max-w-6xl
+          mx-auto
+          px-6
+          pt-8
+          pb-36
+        "
+
+      >
+
+        <h1 className="text-3xl font-bold text-white mb-8">
+
+          Horario
+
+        </h1>
+
+        <WeekGrid/>
+
+      </main>
+
+    </SkyBackground>
+
+  );
 
 }
 

@@ -1,108 +1,237 @@
+import { 
+  Home,
+  CalendarDays,
+  Clock3,
+  BookOpen,
+  User
+} from "lucide-react";
+
 import { NavLink } from "react-router-dom";
 
-import { useTheme } from "../Context/ThemeContext";
 import { useLanguage } from "../Context/LanguageContext";
 
 
-function BottomNav() {
 
+function BottomNav(){
 
-  const { styles } = useTheme();
 
   const { texts } = useLanguage();
 
 
 
+
+  const items = [
+
+
+    {
+
+      name:texts.home || "Inicio",
+
+      icon:Home,
+
+      path:"/"
+
+    },
+
+
+    {
+
+      name:texts.calendar || "Calendario",
+
+      icon:CalendarDays,
+
+      path:"/calendar"
+
+    },
+
+
+    {
+
+      name:texts.schedule || "Horario",
+
+      icon:Clock3,
+
+      path:"/schedule"
+
+    },
+
+
+    {
+
+      name:texts.subjects || "Asignaturas",
+
+      icon:BookOpen,
+
+      path:"/subjects"
+
+    },
+
+
+    {
+
+      name:texts.profile || "Perfil",
+
+      icon:User,
+
+      path:"/profile"
+
+    }
+
+
+  ];
+
+
+
+
+
+
+
+
   return (
 
-    <div
 
-      className={`
+
+    <nav
+
+
+      className="
         fixed
-        bottom-5
-        left-1/2
-        -translate-x-1/2
-        w-[92%]
-        max-w-md
-        rounded-3xl
-        ${styles.nav}
-        shadow-2xl
-        px-6
-        py-4
-        flex
-        justify-between
-        items-center
-        z-[9999]
-      `}
+        bottom-0
+        left-0
+        right-0
+        z-50
+        px-4
+        pb-6
+      "
+
 
     >
 
 
 
-      <NavLink
 
-        to="/"
+      <div
 
-        className="text-white text-sm"
+
+        className="
+          max-w-xl
+          mx-auto
+          rounded-[32px]
+          bg-white/10
+          backdrop-blur-3xl
+          border
+          border-white/20
+          shadow-xl
+          flex
+          justify-around
+          items-center
+          py-3
+        "
+
 
       >
 
-        {texts.home || "Home"}
-
-      </NavLink>
 
 
 
 
-      <NavLink
 
-        to="/calendar"
+        {
 
-        className="text-white text-sm"
 
-      >
+          items.map(item=>{
 
-        {texts.calendar}
 
-      </NavLink>
+            const Icon = item.icon;
 
 
 
-
-      <NavLink
-
-        to="/schedule"
-
-        className="text-white text-sm"
-
-      >
-
-        {texts.schedule}
-
-      </NavLink>
+            return (
 
 
+              <NavLink
 
 
-      <NavLink
-
-        to="/profile"
-
-        className="text-white text-sm"
-
-      >
-
-        {texts.profile}
-
-      </NavLink>
+                key={item.path}
 
 
+                to={item.path}
 
-    </div>
+
+                className={({isActive})=>`
+
+                  flex
+
+                  flex-col
+
+                  items-center
+
+                  gap-1
+
+                  text-xs
+
+                  transition
+
+                  ${
+                    isActive
+
+                    ? "text-white scale-110"
+
+                    : "text-white/60"
+
+                  }
+
+                `}
+
+
+              >
+
+
+
+                <Icon size={22}/>
+
+
+                <span>
+
+
+                  {item.name}
+
+
+                </span>
+
+
+
+              </NavLink>
+
+
+            );
+
+
+          })
+
+
+        }
+
+
+
+
+
+
+
+      </div>
+
+
+
+
+    </nav>
+
+
 
   );
 
+
 }
+
 
 
 export default BottomNav;

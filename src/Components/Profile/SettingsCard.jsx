@@ -6,236 +6,334 @@ import {
   Info
 } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+
 import { useLanguage } from "../../Context/LanguageContext";
 import { useTheme } from "../../Context/ThemeContext";
+
 
 
 function SettingsCard() {
 
 
-  const {
-    language,
-    setLanguage,
-    texts
-  } = useLanguage();
+  const navigate = useNavigate();
 
+  const { language, setLanguage, texts } = useLanguage();
 
-  const {
-    theme,
-    styles
-  } = useTheme();
+  const { styles } = useTheme();
 
 
 
-  const languageName =
-    language === "eu"
-      ? texts.basque
-      : texts.spanish;
+
+
+  const languages = [
+
+    {
+      id: "es",
+      name: "🇪🇸 Español"
+    },
+
+    {
+      id: "eu",
+      name: "🇪🇺 Euskera"
+    },
+
+    {
+      id: "en",
+      name: "🇬🇧 English"
+    },
+
+    {
+      id: "fr",
+      name: "🇫🇷 Français"
+    },
+
+    {
+      id: "it",
+      name: "🇮🇹 Italiano"
+    }
+
+  ];
 
 
 
-  const themeName = {
 
-    day: "Día",
-    sunset: "Atardecer",
-    night: "Noche"
-
-  }[theme];
-
-
-
-  function changeLanguage(){
-
-    setLanguage(
-      language === "es"
-        ? "eu"
-        : "es"
-    );
-
-  }
 
 
 
   return (
+
+
 
     <section
+
+
       className={`
+
         rounded-3xl
-        overflow-hidden
+
+        p-6
+
         shadow-xl
+
         ${styles.card}
+
       `}
-    >
 
-
-      <Setting
-
-        icon={<Globe size={20}/>}
-
-        title={texts.language}
-
-        value={languageName}
-
-        onClick={changeLanguage}
-
-      />
-
-
-      <Divider />
-
-
-
-      <Setting
-
-        icon={<Palette size={20}/>}
-
-        title={texts.theme}
-
-        value={themeName}
-
-      />
-
-
-      <Divider />
-
-
-
-      <Setting
-
-        icon={<Bell size={20}/>}
-
-        title={texts.notifications}
-
-        value="Próximamente"
-
-      />
-
-
-      <Divider />
-
-
-
-      <Setting
-
-        icon={<UserRoundPen size={20}/>}
-
-        title={texts.editProfile}
-
-        value=""
-
-      />
-
-
-      <Divider />
-
-
-
-      <Setting
-
-        icon={<Info size={20}/>}
-
-        title={texts.about}
-
-        value="v1.0"
-
-      />
-
-
-
-    </section>
-
-  );
-
-}
-
-
-
-
-function Divider(){
-
-  return (
-
-    <div className="h-px bg-white/15"/>
-
-  );
-
-}
-
-
-
-
-
-function Setting({
-
-  icon,
-
-  title,
-
-  value,
-
-  onClick
-
-}){
-
-
-  return (
-
-    <button
-
-      onClick={onClick}
-
-      className="
-        w-full
-        px-5
-        py-4
-        flex
-        items-center
-        justify-between
-        hover:bg-white/5
-        transition
-      "
 
     >
 
 
-      <div className="
-        flex
-        items-center
-        gap-3
-        text-white
-      ">
 
 
-        {icon}
+
+      <div className="flex items-center gap-3 mb-6">
 
 
-        <span>
+        <Globe className="text-white"/>
 
-          {title}
 
-        </span>
+        <h2 className="text-xl font-semibold text-white">
+
+
+          {texts.language}
+
+
+        </h2>
 
 
       </div>
 
 
 
-      <span className="
-        text-white/70
-        text-sm
-      ">
-
-
-        {value}
-
-
-      </span>
 
 
 
-    </button>
+
+
+      <div className="space-y-3 mb-8">
+
+
+
+        {
+
+          languages.map(item => (
+
+
+
+            <button
+
+
+              key={item.id}
+
+
+              onClick={()=>setLanguage(item.id)}
+
+
+              className={`
+
+                w-full
+
+                text-left
+
+                px-5
+
+                py-3
+
+                rounded-2xl
+
+                text-white
+
+                transition
+
+                ${
+
+                  language === item.id
+
+                  ? "bg-white/30"
+
+                  : "bg-white/10 hover:bg-white/20"
+
+                }
+
+              `}
+
+
+            >
+
+
+              {item.name}
+
+
+            </button>
+
+
+
+          ))
+
+
+
+        }
+
+
+
+      </div>
+
+
+
+
+
+
+
+
+      <div className="space-y-3">
+
+
+
+
+
+        <button
+
+
+          onClick={()=>navigate("/profile/edit")}
+
+
+          className="
+            w-full
+            flex
+            items-center
+            gap-3
+            p-4
+            rounded-2xl
+            bg-white/10
+            text-white
+          "
+
+
+        >
+
+
+          <UserRoundPen size={20}/>
+
+
+          {texts.editProfile}
+
+
+        </button>
+
+
+
+
+
+
+
+        <button
+
+
+          className="
+            w-full
+            flex
+            items-center
+            gap-3
+            p-4
+            rounded-2xl
+            bg-white/10
+            text-white
+          "
+
+
+        >
+
+
+          <Palette size={20}/>
+
+
+          {texts.theme}
+
+
+        </button>
+
+
+
+
+
+
+
+
+        <button
+
+
+          className="
+            w-full
+            flex
+            items-center
+            gap-3
+            p-4
+            rounded-2xl
+            bg-white/10
+            text-white
+          "
+
+
+        >
+
+
+          <Bell size={20}/>
+
+
+          {texts.notifications}
+
+
+        </button>
+
+
+
+
+
+
+
+        <button
+
+
+          className="
+            w-full
+            flex
+            items-center
+            gap-3
+            p-4
+            rounded-2xl
+            bg-white/10
+            text-white
+          "
+
+
+        >
+
+
+          <Info size={20}/>
+
+
+          {texts.information}
+
+
+        </button>
+
+
+
+
+
+      </div>
+
+
+
+
+
+    </section>
+
+
 
   );
+
 
 }
 

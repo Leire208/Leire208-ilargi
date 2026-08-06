@@ -1,94 +1,148 @@
 const eu = {
 
-  greetingMorning: "Egun on",
+  home: "Hasiera",
 
-  greetingAfternoon: "Arratsalde on",
+  homeGreeting: "Kaixo",
 
-  greetingNight: "Gabon",
+  homeSubtitle: "Antolatu zure eguna eta lortu zure helburuak",
 
-
-  yourDay: "Zure eguna",
-
-  nextClass: "Hurrengo klasea",
-
-  message: "Eguneko mezua",
-
-  schedule: "Gaurko ordutegia",
-
-
-  noClasses:
-    "Ez dago hurrengo klaserik",
-
-
-  motivation:
-    "Urrats txiki bakoitzak balio du.",
-
-
-
-  // Profile
-
-  profile: "Profila",
-
-  language: "Hizkuntza",
-
-  theme: "Gaia",
-
-  notifications: "Jakinarazpenak",
-
-  editProfile: "Profila editatu",
-
-  about: "Ilargiri buruz",
-
-
-
-  // Idiomas
-
-  spanish: "Gaztelania",
-
-  basque: "Euskara",
-
-
-
-  // Horario
-
-  hour: "Ordua",
-
-  classroom: "Gela",
 
   today: "Gaur",
 
-  noClassesToday:
-    "Gaur ez duzu klaserik.",
+  noEvents: "Ez dago ekitaldirik",
+
+  addEvent: "Gehitu ekitaldia",
 
 
+  subjects: "Ikasgaiak",
 
-  // Tareas
+  newSubject: "Ikasgai berria",
+
+  noSubjects: "Ez duzu ikasgairik oraindik",
+
 
   tasks: "Zereginak",
 
-  noTasks:
-    "Ez duzu zereginik.",
+  newTask: "Zeregin berria",
+
+  noTasks: "Ez duzu zereginik oraindik",
+
+  taskTitle: "Zereginaren izena",
+
+  noSubject: "Ikasgairik gabe",
 
 
-
-  // Calendario
-
-  calendar: "Egutegia",
-
-  exams: "Azterketak",
-
-  assignments: "Lan akademikoak",
+  schedule: "Ordutegia",
 
 
+  profile: "Profila",
 
-  // Perfil futuro
+  editProfile: "Profila editatu",
+
+  saveProfile: "Profila gorde",
 
   name: "Izena",
 
   university: "Unibertsitatea",
 
-  degree: "Ikasketak"
+  career: "Ikasketak",
 
+  photo: "Profil argazkia",
+
+  changePhoto: "Argazkia aldatu",
+
+
+  settings: "Ezarpenak",
+
+  notifications: "Jakinarazpenak",
+
+  motivation: "Motibazio mezuak",
+
+  reminders: "Oroigarriak",
+
+
+  language: "Hizkuntza",
+
+  theme: "Gaia",
+
+  information: "Informazioa",
+
+  appName: "Ilargi",
+
+  version: "1.0 bertsioa",
+
+
+  stats: "Estatistikak",
+
+  classes: "Klaseak",
+
+  completedTasks: "Burututako zereginak",
+
+  streak: "Bolada",
+
+
+  calendar: "Egutegia",
+
+  event: "Ekitaldia",
+
+  exam: "Azterketa",
+
+
+  save: "Gorde",
+
+  delete: "Ezabatu",
+
+  cancel: "Utzi",
+
+
+  room: "Gela",
+
+  selectSubject: "Aukeratu ikasgaia",
+
+
+  motivationalPhrases: [
+
+    "Egun bakoitzak balio du. Aurrera jarraitu.",
+
+    "Urrats txikiek emaitza handiak sortzen dituzte.",
+
+    "Gaur egun hobea izateko aukera da.",
+
+    "Gaurko ahalegina biharko harrotasuna da.",
+
+    "Ez bilatu perfekzioa, bilatu aurrerapena.",
+
+    "Konstantziak irabazten du motibazioak huts egiten duenean.",
+
+    "Konfiantza prozesuan.",
+
+    "Helburu handi guztiak urrats txiki batekin hasten dira.",
+
+    "Uste baino gehiago egiteko gai zara.",
+
+    "Egin ezazu bihurtu nahi duzun pertsonagatik.",
+
+    "Ikasitako orrialde bakoitza garaipen bat da.",
+
+    "Entrenamendu bakoitzak zure helburura hurbiltzen zaitu.",
+
+    "Zailtasunen aurrean ez amore eman.",
+
+    "Jarraitu, zaila izan arren.",
+
+    "Diziplinak ametsak eraikitzen ditu.",
+
+    "Zure etorkizuna gaur eraikitzen da.",
+
+    "Egun bat gehiago, hobekuntza bat gehiago.",
+
+    "Ez gelditu orain, aurrera zoaz.",
+
+    "Ahalegina ez da inoiz alferrik galtzen.",
+
+    "Sinetsi zuregan."
+
+  ]
 
 };
 

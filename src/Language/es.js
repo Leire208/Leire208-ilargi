@@ -1,79 +1,148 @@
 const es = {
 
-  greetingMorning: "Buenos días",
-  greetingAfternoon: "Buenas tardes",
-  greetingNight: "Buenas noches",
+  home: "Inicio",
 
-  yourDay: "Tu día",
-  nextClass: "Próxima clase",
-  message: "Mensaje del día",
-  schedule: "Horario de hoy",
+  homeGreeting: "Hola",
 
-  noClasses: "No hay clases próximas",
+  homeSubtitle: "Organiza tu día y consigue tus objetivos",
 
-  motivation:
-    "Cada pequeño paso cuenta.",
-
-
-  // Profile
-
-  profile: "Perfil",
-
-  language: "Idioma",
-
-  theme: "Tema",
-
-  notifications: "Notificaciones",
-
-  editProfile: "Editar perfil",
-
-  about: "Acerca de Ilargi",
-
-
-  // Idiomas
-
-  spanish: "Español",
-
-  basque: "Euskera",
-
-
-  // Horario
-
-  hour: "Hora",
-
-  classroom: "Aula",
 
   today: "Hoy",
 
-  noClassesToday:
-    "No tienes clases para hoy.",
+  noEvents: "No hay eventos",
+
+  addEvent: "Añadir evento",
 
 
-  // Tareas
+  subjects: "Asignaturas",
+
+  newSubject: "Nueva asignatura",
+
+  noSubjects: "No tienes asignaturas todavía",
+
 
   tasks: "Tareas",
 
-  noTasks:
-    "No tienes tareas pendientes.",
+  newTask: "Nueva tarea",
+
+  noTasks: "No tienes tareas todavía",
+
+  taskTitle: "Título de la tarea",
+
+  noSubject: "Sin asignatura",
 
 
-  // Calendario
-
-  calendar: "Calendario",
-
-  exams: "Exámenes",
-
-  assignments: "Trabajos",
+  schedule: "Horario",
 
 
-  // Perfil futuro
+  profile: "Perfil",
+
+  editProfile: "Editar perfil",
+
+  saveProfile: "Guardar perfil",
 
   name: "Nombre",
 
   university: "Universidad",
 
-  degree: "Carrera"
+  career: "Carrera",
 
+  photo: "Foto de perfil",
+
+  changePhoto: "Cambiar foto",
+
+
+  settings: "Ajustes",
+
+  notifications: "Notificaciones",
+
+  motivation: "Mensajes de motivación",
+
+  reminders: "Recordatorios",
+
+
+  language: "Idioma",
+
+  theme: "Tema",
+
+  information: "Información",
+
+  appName: "Ilargi",
+
+  version: "Versión 1.0",
+
+
+  stats: "Estadísticas",
+
+  classes: "Clases",
+
+  completedTasks: "Tareas completadas",
+
+  streak: "Racha",
+
+
+  calendar: "Calendario",
+
+  event: "Evento",
+
+  exam: "Examen",
+
+
+  save: "Guardar",
+
+  delete: "Eliminar",
+
+  cancel: "Cancelar",
+
+
+  room: "Aula",
+
+  selectSubject: "Selecciona asignatura",
+
+
+  motivationalPhrases: [
+
+    "Cada día cuenta. Sigue avanzando.",
+
+    "Pequeños pasos crean grandes resultados.",
+
+    "Hoy es un buen día para mejorar.",
+
+    "Tu esfuerzo de hoy es tu orgullo de mañana.",
+
+    "No busques perfección, busca progreso.",
+
+    "La constancia gana cuando la motivación falla.",
+
+    "Confía en el proceso.",
+
+    "Todo gran objetivo empieza con un pequeño paso.",
+
+    "Eres capaz de más de lo que imaginas.",
+
+    "Hazlo por la persona en la que quieres convertirte.",
+
+    "Cada página estudiada es una victoria.",
+
+    "Cada entrenamiento te acerca a tu meta.",
+
+    "Los resultados llegan a quienes no abandonan.",
+
+    "Sigue, incluso cuando sea difícil.",
+
+    "La disciplina construye sueños.",
+
+    "Tu futuro se construye hoy.",
+
+    "Un día más, una mejora más.",
+
+    "No pares ahora, estás avanzando.",
+
+    "El esfuerzo nunca es tiempo perdido.",
+
+    "Cree en ti."
+
+  ]
 
 };
 

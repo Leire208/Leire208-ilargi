@@ -1,7 +1,8 @@
 import { createContext, useContext, useState } from "react";
 
 
-const ClassContext = createContext();
+const ClassContext = createContext(null);
+
 
 
 
@@ -9,19 +10,34 @@ export function ClassProvider({ children }) {
 
 
 
-  const [classes, setClassesState] = useState(()=>{
+  const [classes, setClasses] = useState(()=>{
 
 
-    const saved = localStorage.getItem(
-      "ilargi-classes"
-    );
+    try {
 
 
-    return saved
+      const saved = localStorage.getItem(
 
-      ? JSON.parse(saved)
+        "ilargi-classes"
 
-      : [];
+      );
+
+
+      return saved
+
+        ? JSON.parse(saved)
+
+        : [];
+
+
+
+    } catch {
+
+
+      return [];
+
+
+    }
 
 
   });
@@ -29,10 +45,15 @@ export function ClassProvider({ children }) {
 
 
 
+
+
+
   function saveClasses(data){
 
 
-    setClassesState(data);
+
+    setClasses(data);
+
 
 
     localStorage.setItem(
@@ -44,7 +65,11 @@ export function ClassProvider({ children }) {
     );
 
 
+
   }
+
+
+
 
 
 
@@ -53,19 +78,37 @@ export function ClassProvider({ children }) {
   function addClass(newClass){
 
 
+
     const updated = [
+
 
       ...classes,
 
-      newClass
+
+      {
+
+
+        id: Date.now(),
+
+
+        ...newClass
+
+
+      }
+
 
     ];
+
 
 
     saveClasses(updated);
 
 
+
   }
+
+
+
 
 
 
@@ -74,15 +117,20 @@ export function ClassProvider({ children }) {
   function removeClass(id){
 
 
-    const updated = classes.filter(
 
-      item => item.id !== id
+    saveClasses(
+
+
+      classes.filter(
+
+        item => item.id !== id
+
+      )
+
 
     );
 
 
-    saveClasses(updated);
-
 
   }
 
@@ -90,35 +138,49 @@ export function ClassProvider({ children }) {
 
 
 
-  function updateClass(id, data){
 
 
-    const updated = classes.map(item=>{
+
+  function updateClass(id,data){
 
 
-      if(item.id === id){
 
-        return {
-
-          ...item,
-
-          ...data
-
-        };
-
-      }
+    saveClasses(
 
 
-      return item;
+      classes.map(item =>
 
 
-    });
+
+        item.id === id
 
 
-    saveClasses(updated);
+          ? {
+
+
+              ...item,
+
+
+              ...data
+
+
+            }
+
+
+          : item
+
+
+
+      )
+
+
+    );
 
 
   }
+
+
+
 
 
 
@@ -126,27 +188,45 @@ export function ClassProvider({ children }) {
 
   return (
 
+
+
     <ClassContext.Provider
+
 
       value={{
 
+
         classes,
+
 
         addClass,
 
+
         removeClass,
+
 
         updateClass
 
+
+
       }}
+
+
 
     >
 
+
+
       {children}
+
+
 
     </ClassContext.Provider>
 
+
+
   );
+
 
 
 }
@@ -155,8 +235,33 @@ export function ClassProvider({ children }) {
 
 
 
+
+
+
 export function useClasses(){
 
-  return useContext(ClassContext);
+
+
+  const context = useContext(ClassContext);
+
+
+
+  if(!context){
+
+
+    throw new Error(
+
+      "useClasses debe usarse dentro de ClassProvider"
+
+    );
+
+
+  }
+
+
+
+  return context;
+
+
 
 }

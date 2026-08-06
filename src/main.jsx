@@ -12,6 +12,11 @@ import { UserProvider } from "./Context/UserContext.jsx";
 import { LanguageProvider } from "./Context/LanguageContext.jsx";
 import { ClassProvider } from "./Context/ClassContext.jsx";
 import { TaskProvider } from "./Context/TaskContext.jsx";
+import { EventProvider } from "./Context/EventContext.jsx";
+import { SubjectProvider } from "./Context/SubjectContext.jsx";
+import { DashboardProvider } from "./Context/DashboardContext.jsx";
+import { ScheduleProvider } from "./Context/ScheduleContext.jsx";
+
 
 ReactDOM.createRoot(
 
@@ -19,38 +24,80 @@ ReactDOM.createRoot(
 
 ).render(
 
+
   <React.StrictMode>
+
 
     <BrowserRouter>
 
+
       <ThemeProvider>
+
 
         <SettingsProvider>
 
+
           <LanguageProvider>
+
 
             <UserProvider>
 
-              <ClassProvider>
 
-                <TaskProvider>
+              <SubjectProvider>
 
-                  <App />
 
-                </TaskProvider>
+                <ClassProvider>
 
-              </ClassProvider>
+
+                  <TaskProvider>
+
+
+                    <EventProvider>
+
+
+                      <ScheduleProvider>
+
+
+                        <DashboardProvider>
+
+
+                          <App />
+
+
+                        </DashboardProvider>
+
+
+                      </ScheduleProvider>
+
+
+                    </EventProvider>
+
+
+                  </TaskProvider>
+
+
+                </ClassProvider>
+
+
+              </SubjectProvider>
+
 
             </UserProvider>
 
+
           </LanguageProvider>
+
 
         </SettingsProvider>
 
+
       </ThemeProvider>
+
 
     </BrowserRouter>
 
+
   </React.StrictMode>
+
 
 );
