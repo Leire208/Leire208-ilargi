@@ -1,13 +1,22 @@
 import { NavLink } from "react-router-dom";
+
 import { useTheme } from "../Context/ThemeContext";
+import { useLanguage } from "../Context/LanguageContext";
+
 
 function BottomNav() {
 
+
   const { styles } = useTheme();
+
+  const { texts } = useLanguage();
+
+
 
   return (
 
     <div
+
       className={`
         fixed
         bottom-5
@@ -21,44 +30,79 @@ function BottomNav() {
         px-6
         py-4
         flex
-        justify-around
+        justify-between
         items-center
         z-[9999]
       `}
+
     >
 
-      <NavLink 
+
+
+      <NavLink
+
         to="/"
+
         className="text-white text-sm"
+
       >
-        Home
+
+        {texts.home || "Home"}
+
       </NavLink>
 
-      <NavLink 
+
+
+
+      <NavLink
+
         to="/calendar"
+
         className="text-white text-sm"
+
       >
-        Calendar
+
+        {texts.calendar}
+
       </NavLink>
 
-      <NavLink 
+
+
+
+      <NavLink
+
         to="/schedule"
+
         className="text-white text-sm"
+
       >
-        Schedule
+
+        {texts.schedule}
+
       </NavLink>
 
-      <NavLink 
+
+
+
+      <NavLink
+
         to="/profile"
+
         className="text-white text-sm"
+
       >
-        Profile
+
+        {texts.profile}
+
       </NavLink>
+
+
 
     </div>
 
   );
 
 }
+
 
 export default BottomNav;
