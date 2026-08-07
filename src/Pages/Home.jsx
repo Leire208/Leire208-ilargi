@@ -2,8 +2,10 @@ import SkyBackground from "../Components/SkyBackground";
 import Layout from "../Components/Layout";
 
 import NextEventCard from "../Components/Home/NextEventCard";
+import MotivationCard from "../Components/Home/MotivationCard";
 
 import { useUser } from "../Context/UserContext";
+import { useAuth } from "../Context/AuthContext";
 import { useTheme } from "../Context/ThemeContext";
 import { useLanguage } from "../Context/LanguageContext";
 import { useEvents } from "../Context/EventContext";
@@ -12,30 +14,28 @@ import { useTasks } from "../Context/TaskContext";
 function Home() {
 
   const { user } = useUser();
+  const { currentUser } = useAuth();
 
   const { styles } = useTheme();
-
   const { texts } = useLanguage();
 
   const { events } = useEvents();
-
   const { tasks } = useTasks();
-
-
 
   const pendingTasks = tasks.filter(
     task => !task.completed
   );
 
-
-
   const nextEvent = [...events]
     .sort(
-      (a, b) =>
-        new Date(a.date) - new Date(b.date)
+      (a, b) => new Date(a.date) - new Date(b.date)
     )[0];
 
-
+  const userName =
+    user?.name ||
+    currentUser?.displayName ||
+    currentUser?.email?.split("@")[0] ||
+    "Usuario";
 
   return (
 
@@ -44,19 +44,17 @@ function Home() {
       <Layout>
 
         <main
-
           className="
             min-h-screen
             max-w-4xl
             mx-auto
             px-6
             pt-8
+            pb-40
           "
-
         >
 
           <section
-
             className={`
               rounded-3xl
               p-6
@@ -64,26 +62,17 @@ function Home() {
               shadow-xl
               ${styles.card}
             `}
-
           >
 
             <h1 className="text-3xl font-bold text-white">
-
-              {texts.homeGreeting}, {user.name} 👋
-
+              {texts.homeGreeting}, {userName}
             </h1>
 
             <p className="text-white/70 mt-2">
-
               {texts.homeSubtitle}
-
             </p>
 
           </section>
-
-
-
-
 
           <div className="space-y-6">
 
@@ -91,39 +80,29 @@ function Home() {
               event={nextEvent}
             />
 
-
-
-
+            <MotivationCard />
 
             <section
-
               className={`
                 rounded-3xl
                 p-6
                 shadow-xl
                 ${styles.card}
               `}
-
             >
 
               <h2 className="text-xl font-bold text-white mb-4">
-
                 {texts.pendingTasks || "Tareas pendientes"}
-
               </h2>
 
               {
-
                 pendingTasks.length === 0 && (
 
                   <p className="text-white/60">
-
-                    {texts.noPendingTasks || "No tienes tareas pendientes 🎉"}
-
+                    {texts.noPendingTasks || "No tienes tareas pendientes"}
                   </p>
 
                 )
-
               }
 
               {
@@ -131,22 +110,17 @@ function Home() {
                 pendingTasks.slice(0, 5).map(task => (
 
                   <div
-
                     key={task.id}
-
                     className="
                       bg-white/10
                       rounded-2xl
                       p-4
                       mb-3
                     "
-
                   >
 
                     <h3 className="text-white font-semibold">
-
                       {task.title}
-
                     </h3>
 
                     {
@@ -154,9 +128,7 @@ function Home() {
                       task.subject && (
 
                         <p className="text-white/60 text-sm">
-
-                          📚 {task.subject}
-
+                          {task.subject}
                         </p>
 
                       )
@@ -168,9 +140,7 @@ function Home() {
                       task.date && (
 
                         <p className="text-white/50 text-xs mt-1">
-
-                          📅 {task.date}
-
+                          {task.date}
                         </p>
 
                       )

@@ -1,76 +1,217 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 import { useEvents } from "./EventContext";
 import { useSubjects } from "./SubjectContext";
+import { useTasks } from "./TaskContext";
+import { useSchedule } from "./ScheduleContext";
 
 import {
-
   getNextEvent,
-
   getUpcomingEvents
-
 } from "../Utils/eventUtils";
 
-const DashboardContext = createContext();
+
+const DashboardContext = createContext(null);
+
+
 
 export function DashboardProvider({ children }) {
 
-  const { events } = useEvents();
 
-  const { subjects } = useSubjects();
+const { events } = useEvents();
 
-  const nextEvent = getNextEvent(events);
+const { subjects } = useSubjects();
 
-  const upcomingEvents = getUpcomingEvents(events);
+const { tasks } = useTasks();
 
-  const today = new Date();
+const { classes } = useSchedule();
 
-  const todayEvents = events.filter(event => {
 
-    const date = new Date(event.date);
 
-    return (
 
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
 
-    );
+const dashboard = useMemo(()=>{
 
-  });
 
-  const value = {
+const today = new Date();
 
-    events,
 
-    subjects,
 
-    nextEvent,
+const todayEvents = events.filter(event=>{
 
-    upcomingEvents,
 
-    todayEvents,
+const date = new Date(event.date);
 
-    totalSubjects: subjects.length,
 
-    totalEvents: events.length
 
-  };
+return (
 
-  return (
+date.getDate() === today.getDate()
 
-    <DashboardContext.Provider value={value}>
+&&
 
-      {children}
+date.getMonth() === today.getMonth()
 
-    </DashboardContext.Provider>
+&&
 
-  );
+date.getFullYear() === today.getFullYear()
+
+);
+
+
+});
+
+
+
+
+
+
+
+const todayClasses = classes.filter(item=>{
+
+
+return item.day ===
+
+today.toLocaleDateString(
+
+"es-ES",
+
+{
+
+weekday:"short"
 
 }
 
-export function useDashboard() {
+).charAt(0).toUpperCase();
 
-  return useContext(DashboardContext);
+
+});
+
+
+
+
+
+
+
+
+return {
+
+
+events,
+
+subjects,
+
+tasks,
+
+classes,
+
+
+
+nextEvent:getNextEvent(events),
+
+
+upcomingEvents:getUpcomingEvents(events),
+
+
+todayEvents,
+
+todayClasses,
+
+
+
+totalSubjects:subjects.length,
+
+
+totalEvents:events.length,
+
+
+totalTasks:tasks.length,
+
+
+completedTasks:
+
+tasks.filter(
+
+task=>task.completed
+
+).length,
+
+
+pendingTasks:
+
+tasks.filter(
+
+task=>!task.completed
+
+).length
+
+
+
+};
+
+
+
+},[
+
+events,
+
+subjects,
+
+tasks,
+
+classes
+
+]);
+
+
+
+
+
+
+
+return (
+
+<DashboardContext.Provider
+
+value={dashboard}
+
+>
+
+{children}
+
+</DashboardContext.Provider>
+
+);
+
+
+}
+
+
+
+
+
+
+
+export function useDashboard(){
+
+
+const context = useContext(DashboardContext);
+
+
+
+if(!context){
+
+throw new Error(
+
+"useDashboard debe usarse dentro de DashboardProvider"
+
+);
+
+}
+
+
+
+return context;
+
 
 }

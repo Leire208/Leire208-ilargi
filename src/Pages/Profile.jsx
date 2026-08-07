@@ -4,50 +4,19 @@ import ProfileHeader from "../Components/Profile/ProfileHeader";
 import StatsCard from "../Components/Profile/StatsCard";
 import SettingsCard from "../Components/Profile/SettingsCard";
 
-import { Sparkles, Info } from "lucide-react";
+import { Info } from "lucide-react";
 
 import { useLanguage } from "../Context/LanguageContext";
 import { useTheme } from "../Context/ThemeContext";
-
-import motivationalPhrases from "../Data/motivationalPhrases";
 
 
 
 function Profile() {
 
 
-  const { texts, language } = useLanguage();
+  const { texts } = useLanguage();
 
   const { styles } = useTheme();
-
-
-
-
-
-  const phrases = motivationalPhrases[language]
-
-    || motivationalPhrases.es;
-
-
-
-
-
-  const phrase =
-
-    phrases[
-
-      Math.floor(
-
-        Math.random() *
-
-        phrases.length
-
-      )
-
-    ];
-
-
-
 
 
 
@@ -59,8 +28,8 @@ function Profile() {
     <SkyBackground>
 
 
-
       <main
+
 
         className="
           max-w-xl
@@ -70,6 +39,7 @@ function Profile() {
           pb-36
           min-h-screen
         "
+
 
       >
 
@@ -83,6 +53,7 @@ function Profile() {
 
 
 
+
         <div className="mt-8">
 
 
@@ -90,71 +61,6 @@ function Profile() {
 
 
         </div>
-
-
-
-
-
-
-
-
-
-        <section
-
-
-          className={`
-
-            mt-8
-
-            rounded-3xl
-
-            p-6
-
-            shadow-xl
-
-            ${styles.card}
-
-          `}
-
-
-        >
-
-
-
-          <div className="flex items-center gap-3 mb-4">
-
-
-            <Sparkles className="text-white"/>
-
-
-            <h2 className="text-xl font-semibold text-white">
-
-
-              {texts.motivation}
-
-
-            </h2>
-
-
-          </div>
-
-
-
-
-
-          <p className="text-white/80 leading-relaxed">
-
-
-            {phrase}
-
-
-          </p>
-
-
-
-
-
-        </section>
 
 
 
@@ -207,6 +113,8 @@ function Profile() {
 
 
 
+
+
           <p className="text-white font-semibold">
 
 
@@ -219,6 +127,8 @@ function Profile() {
 
 
 
+
+
           <p className="text-white/60 mt-1">
 
 
@@ -226,6 +136,8 @@ function Profile() {
 
 
           </p>
+
+
 
 
 
@@ -253,15 +165,16 @@ function Profile() {
 
 
 
-      </main>
 
+
+      </main>
 
 
     </SkyBackground>
 
 
-
   );
+
 
 }
 

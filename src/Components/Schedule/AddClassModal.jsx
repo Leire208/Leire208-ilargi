@@ -6,352 +6,329 @@ import { useSubjects } from "../../Context/SubjectContext";
 import { useSchedule } from "../../Context/ScheduleContext";
 
 
-
 function AddClassModal({
 
-  open,
+open,
 
-  close,
+close,
 
-  day,
+day,
 
-  hour
+hour
 
 }) {
 
 
+const { styles } = useTheme();
 
-  const { styles } = useTheme();
+const { subjects } = useSubjects();
 
+const { addClass } = useSchedule();
 
-  const { subjects } = useSubjects();
 
 
-  const { addClass } = useSchedule();
+const [subjectId, setSubjectId] = useState("");
 
+const [room, setRoom] = useState("");
 
 
 
+if(!open) return null;
 
-  const [subjectId,setSubjectId] = useState("");
 
-  const [room,setRoom] = useState("");
 
 
 
+async function save(){
 
 
 
+const subject = subjects.find(
 
-  if(!open) return null;
+item => item.id === subjectId
 
+);
 
 
 
 
 
+if(!subject){
 
+console.log("No hay asignatura seleccionada");
 
-  function save(){
+return;
 
+}
 
 
-    const subject = subjects.find(
 
-      item => item.id === Number(subjectId)
 
-    );
 
 
+const newClass = {
 
 
+day,
 
-    if(!subject) return;
+start: hour,
 
 
+subjectId: subject.id,
 
 
+subjectName: subject.name,
 
 
-    addClass({
+color: subject.color || "#60a5fa",
 
 
-      day,
+room
 
 
-      start:hour,
 
+};
 
-      subjectId:subject.id,
 
 
-      subjectName:subject.name,
 
+console.log("GUARDANDO CLASE:", newClass);
 
-      color:subject.color,
 
 
-      room
 
+await addClass(newClass);
 
 
-    });
 
+setSubjectId("");
 
+setRoom("");
 
 
 
+close();
 
-    close();
-
-
-
-  }
-
-
-
-
-
-
-
-  return (
-
-
-
-    <div
-
-
-      className="
-        fixed
-        inset-0
-        z-[120]
-        bg-black/40
-        backdrop-blur-sm
-        flex
-        items-center
-        justify-center
-        px-6
-      "
-
-
-      onClick={close}
-
-
-    >
-
-
-
-
-      <section
-
-
-        onClick={(e)=>e.stopPropagation()}
-
-
-        className={`
-
-          w-full
-
-          max-w-md
-
-          rounded-3xl
-
-          p-6
-
-          ${styles.card}
-
-        `}
-
-
-      >
-
-
-
-
-
-        <div className="flex justify-between items-center mb-6">
-
-
-          <h2 className="text-2xl font-bold text-white">
-
-
-            Nueva clase
-
-
-          </h2>
-
-
-
-
-
-          <button onClick={close}>
-
-
-            <X className="text-white"/>
-
-
-          </button>
-
-
-
-        </div>
-
-
-
-
-
-
-
-        <select
-
-
-          value={subjectId}
-
-
-          onChange={(e)=>setSubjectId(e.target.value)}
-
-
-          className="
-            w-full
-            mb-4
-            rounded-2xl
-            bg-white/20
-            text-white
-            px-4
-            py-3
-          "
-
-
-        >
-
-
-
-          <option value="">
-
-
-            Selecciona asignatura
-
-
-          </option>
-
-
-
-
-          {
-
-
-            subjects.map(subject=>(
-
-
-              <option
-
-
-                key={subject.id}
-
-
-                value={subject.id}
-
-
-              >
-
-
-                {subject.name}
-
-
-              </option>
-
-
-
-            ))
-
-
-          }
-
-
-
-
-
-        </select>
-
-
-
-
-
-
-
-        <input
-
-
-          value={room}
-
-
-          onChange={(e)=>setRoom(e.target.value)}
-
-
-          placeholder="Aula"
-
-
-          className="
-            w-full
-            mb-6
-            rounded-2xl
-            bg-white/20
-            text-white
-            px-4
-            py-3
-          "
-
-
-        />
-
-
-
-
-
-
-
-        <button
-
-
-          onClick={save}
-
-
-          className="
-            w-full
-            py-4
-            rounded-2xl
-            bg-white/20
-            text-white
-            font-semibold
-          "
-
-
-        >
-
-
-          Guardar
-
-
-        </button>
-
-
-
-
-
-      </section>
-
-
-
-
-    </div>
-
-
-
-  );
 
 
 }
 
+
+
+
+
+
+return (
+
+
+<div
+
+className="
+fixed
+inset-0
+z-[120]
+bg-black/40
+backdrop-blur-sm
+flex
+items-center
+justify-center
+px-6
+"
+
+onClick={close}
+
+>
+
+
+<section
+
+onClick={(e)=>e.stopPropagation()}
+
+className={`
+
+w-full
+
+max-w-md
+
+rounded-3xl
+
+p-6
+
+${styles.card}
+
+`}
+
+>
+
+
+
+<div className="flex justify-between items-center mb-6">
+
+
+<h2 className="text-2xl font-bold text-white">
+
+Nueva clase
+
+</h2>
+
+
+
+<button onClick={close}>
+
+<X className="text-white"/>
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<select
+
+
+value={subjectId}
+
+
+onChange={(e)=>setSubjectId(e.target.value)}
+
+
+className="
+w-full
+mb-4
+rounded-2xl
+bg-white/20
+text-white
+px-4
+py-3
+"
+
+
+>
+
+
+<option value="">
+
+Selecciona asignatura
+
+</option>
+
+
+
+{
+
+subjects.map(subject => (
+
+
+<option
+
+key={subject.id}
+
+value={subject.id}
+
+>
+
+
+{subject.name}
+
+
+</option>
+
+
+))
+
+
+}
+
+
+
+</select>
+
+
+
+
+
+
+
+
+
+<input
+
+
+value={room}
+
+
+onChange={(e)=>setRoom(e.target.value)}
+
+
+placeholder="Aula"
+
+
+className="
+w-full
+mb-6
+rounded-2xl
+bg-white/20
+text-white
+px-4
+py-3
+"
+
+
+/>
+
+
+
+
+
+
+
+
+
+<button
+
+
+onClick={save}
+
+
+className="
+w-full
+py-4
+rounded-2xl
+bg-white/20
+text-white
+font-semibold
+hover:bg-white/30
+transition
+"
+
+
+>
+
+
+Guardar
+
+
+</button>
+
+
+
+
+
+</section>
+
+
+
+</div>
+
+
+);
+
+}
 
 
 export default AddClassModal;

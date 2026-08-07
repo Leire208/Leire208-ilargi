@@ -1,9 +1,20 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc
+} from "firebase/firestore";
+
+import { db } from "../Firebase/firebase";
+
+import { useAuth } from "./AuthContext";
 
 
 const SubjectContext = createContext(null);
-
-
 
 
 
@@ -11,267 +22,161 @@ export function SubjectProvider({ children }) {
 
 
 
-  const [subjects, setSubjects] = useState(()=>{
+const { currentUser } = useAuth();
 
 
-    try {
+const [subjects, setSubjects] = useState([]);
 
+const [loading, setLoading] = useState(true);
 
-      const saved = localStorage.getItem(
 
-        "ilargi-subjects"
 
-      );
 
 
-      return saved
+useEffect(()=>{
 
-        ? JSON.parse(saved)
 
-        : [];
+async function loadSubjects(){
 
 
+if(!currentUser){
 
-    } catch {
+setSubjects([]);
 
+setLoading(false);
 
-      return [];
+return;
 
+}
 
-    }
 
 
-  });
+const ref = collection(
 
+db,
 
+"users",
 
+currentUser.uid,
 
+"subjects"
 
+);
 
 
 
+const snapshot = await getDocs(ref);
 
 
-  function saveSubjects(data){
 
+const data = snapshot.docs.map(item => ({
 
 
-    setSubjects(data);
+id:item.id,
 
 
+...item.data()
 
-    localStorage.setItem(
 
-      "ilargi-subjects",
+}));
 
-      JSON.stringify(data)
 
-    );
 
+setSubjects(data);
 
 
-  }
+setLoading(false);
 
 
+}
 
 
 
+loadSubjects();
 
 
+},[currentUser]);
 
 
 
-  function addSubject(subject){
 
 
 
-    const newSubject = {
 
 
 
-      id: Date.now(),
+async function addSubject(subject){
 
 
+if(!currentUser) return;
 
-      name: subject.name,
 
 
+const ref = collection(
 
-      teacher: subject.teacher || "",
+db,
 
+"users",
 
+currentUser.uid,
 
-      classroom: subject.classroom || "",
+"subjects"
 
+);
 
 
-      color: subject.color || "#60a5fa",
 
+const newSubject = {
 
 
-      credits: subject.credits || "",
+name: subject.name,
 
 
+teacher: subject.teacher || "",
 
-      semester: subject.semester || "1"
 
+classroom: subject.classroom || "",
 
 
-    };
+color: subject.color || "#60a5fa",
 
 
+credits: subject.credits || "",
 
 
+semester: subject.semester || "1"
 
 
+};
 
-    saveSubjects([
 
 
-      ...subjects,
+const result = await addDoc(
 
+ref,
 
-      newSubject
+newSubject
 
+);
 
 
-    ]);
 
+setSubjects(prev => [
 
 
-  }
+...prev,
 
 
+{
 
+id:result.id,
 
+...newSubject
 
+}
 
 
-
-
-  function removeSubject(id){
-
-
-
-    saveSubjects(
-
-
-
-      subjects.filter(
-
-
-        item => item.id !== id
-
-
-      )
-
-
-    );
-
-
-
-  }
-
-
-
-
-
-
-
-
-
-  function updateSubject(id,data){
-
-
-
-    saveSubjects(
-
-
-
-      subjects.map(item =>
-
-
-
-        item.id === id
-
-
-          ? {
-
-
-              ...item,
-
-
-              ...data
-
-
-            }
-
-
-          : item
-
-
-
-      )
-
-
-
-    );
-
-
-
-  }
-
-
-
-
-
-
-
-
-
-  return (
-
-
-
-    <SubjectContext.Provider
-
-
-
-      value={{
-
-
-
-        subjects,
-
-
-        addSubject,
-
-
-        removeSubject,
-
-
-        updateSubject
-
-
-
-      }}
-
-
-
-    >
-
-
-
-      {children}
-
-
-
-    </SubjectContext.Provider>
-
-
-
-  );
-
+]);
 
 
 }
@@ -284,30 +189,179 @@ export function SubjectProvider({ children }) {
 
 
 
+async function removeSubject(id){
+
+
+if(!currentUser) return;
+
+
+
+await deleteDoc(
+
+doc(
+
+db,
+
+"users",
+
+currentUser.uid,
+
+"subjects",
+
+id
+
+)
+
+);
+
+
+
+setSubjects(prev =>
+
+
+prev.filter(
+
+item => item.id !== id
+
+)
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+async function updateSubject(id,data){
+
+
+if(!currentUser) return;
+
+
+
+await updateDoc(
+
+doc(
+
+db,
+
+"users",
+
+currentUser.uid,
+
+"subjects",
+
+id
+
+),
+
+data
+
+);
+
+
+
+setSubjects(prev =>
+
+
+prev.map(item =>
+
+
+item.id === id
+
+?
+
+{
+
+...item,
+
+...data
+
+}
+
+:
+
+item
+
+
+)
+
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+return (
+
+<SubjectContext.Provider
+
+value={{
+
+subjects,
+
+loading,
+
+addSubject,
+
+removeSubject,
+
+updateSubject
+
+}}
+
+>
+
+
+{!loading && children}
+
+
+</SubjectContext.Provider>
+
+
+);
+
+
+}
+
+
+
+
+
 export function useSubjects(){
 
 
-
-  const context = useContext(SubjectContext);
-
-
-
-  if(!context){
-
-
-    throw new Error(
-
-      "useSubjects debe usarse dentro de SubjectProvider"
-
-    );
-
-
-  }
+const context = useContext(SubjectContext);
 
 
 
-  return context;
+if(!context){
 
+throw new Error(
+
+"useSubjects debe usarse dentro de SubjectProvider"
+
+);
+
+}
+
+
+
+return context;
 
 
 }

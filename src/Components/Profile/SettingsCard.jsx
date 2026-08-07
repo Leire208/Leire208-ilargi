@@ -1,16 +1,25 @@
+import { useState } from "react";
+
 import {
   Globe,
   Palette,
   Bell,
   UserRoundPen,
-  Info
+  Info,
+  Image,
+  ChevronRight,
+  MessageCircle
 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 
 import { useLanguage } from "../../Context/LanguageContext";
 import { useTheme } from "../../Context/ThemeContext";
+import { useUser } from "../../Context/UserContext";
 
+import Switch from "./Switch";
+import LanguageModal from "./LanguageModal";
+import ThemeModal from "./ThemeModal";
 
 
 function SettingsCard() {
@@ -18,42 +27,239 @@ function SettingsCard() {
 
   const navigate = useNavigate();
 
-  const { language, setLanguage, texts } = useLanguage();
 
-  const { styles } = useTheme();
-
+  const { language, texts } = useLanguage();
 
 
+  const { styles, mode } = useTheme();
 
 
-  const languages = [
+  const {
 
-    {
-      id: "es",
-      name: "🇪🇸 Español"
-    },
+    user,
 
-    {
-      id: "eu",
-      name: "🇪🇺 Euskera"
-    },
+    updateSettings
 
-    {
-      id: "en",
-      name: "🇬🇧 English"
-    },
+  } = useUser();
 
-    {
-      id: "fr",
-      name: "🇫🇷 Français"
-    },
 
-    {
-      id: "it",
-      name: "🇮🇹 Italiano"
-    }
 
-  ];
+
+  const [languageOpen,setLanguageOpen] = useState(false);
+
+  const [themeOpen,setThemeOpen] = useState(false);
+
+
+
+
+
+
+  const currentLanguage = {
+
+    es:"Español",
+
+    eu:"Euskara",
+
+    en:"English",
+
+    fr:"Français",
+
+    it:"Italiano"
+
+  }[language];
+
+
+
+
+
+
+  const currentTheme = {
+
+    auto:"Automático",
+
+    day:"Día",
+
+    sunset:"Atardecer",
+
+    night:"Noche"
+
+  }[mode];
+
+
+
+
+
+
+
+
+
+  function Row({
+
+    icon,
+
+    title,
+
+    value,
+
+    onClick
+
+  }) {
+
+
+    return (
+
+      <button
+
+
+        onClick={onClick}
+
+
+        className="
+          w-full
+          flex
+          items-center
+          justify-between
+          p-4
+          rounded-2xl
+          bg-white/10
+          hover:bg-white/20
+          transition
+          text-white
+        "
+
+
+      >
+
+
+        <div className="flex items-center gap-4">
+
+
+          {icon}
+
+
+          <span>
+
+            {title}
+
+          </span>
+
+
+        </div>
+
+
+
+
+
+        <div className="flex items-center gap-2 text-white/60">
+
+
+          {
+
+            value && (
+
+              <span>
+
+                {value}
+
+              </span>
+
+            )
+
+          }
+
+
+          <ChevronRight size={18}/>
+
+
+        </div>
+
+
+
+      </button>
+
+    );
+
+
+  }
+
+
+
+
+
+
+
+
+
+  function SwitchRow({
+
+    icon,
+
+    title,
+
+    checked,
+
+    onChange
+
+  }) {
+
+
+    return (
+
+      <div
+
+
+        className="
+          w-full
+          flex
+          items-center
+          justify-between
+          p-4
+          rounded-2xl
+          bg-white/10
+        "
+
+
+      >
+
+
+        <div className="flex items-center gap-4 text-white">
+
+
+          {icon}
+
+
+          <span>
+
+            {title}
+
+          </span>
+
+
+        </div>
+
+
+
+
+
+        <Switch
+
+
+          checked={checked}
+
+
+          onChange={onChange}
+
+
+        />
+
+
+      </div>
+
+    );
+
+  }
+
+
 
 
 
@@ -63,280 +269,289 @@ function SettingsCard() {
 
   return (
 
+    <>
 
 
-    <section
+      <section
 
 
-      className={`
+        className={`
 
-        rounded-3xl
+          rounded-3xl
 
-        p-6
+          p-6
 
-        shadow-xl
+          shadow-xl
 
-        ${styles.card}
+          ${styles.card}
 
-      `}
-
-
-    >
+        `}
 
 
+      >
 
 
 
-      <div className="flex items-center gap-3 mb-6">
 
+        <h2 className="text-2xl font-bold text-white mb-6">
 
-        <Globe className="text-white"/>
-
-
-        <h2 className="text-xl font-semibold text-white">
-
-
-          {texts.language}
-
+          Ajustes
 
         </h2>
 
 
-      </div>
 
 
 
 
 
 
+        <div className="space-y-3">
 
 
-      <div className="space-y-3 mb-8">
+          <Row
 
 
+            icon={<UserRoundPen size={20}/>}
 
-        {
 
-          languages.map(item => (
+            title={texts.editProfile}
 
 
+            onClick={()=>navigate("/profile/edit")}
 
-            <button
 
+          />
 
-              key={item.id}
 
 
-              onClick={()=>setLanguage(item.id)}
 
 
-              className={`
+          <Row
 
-                w-full
 
-                text-left
+            icon={<Image size={20}/>}
 
-                px-5
 
-                py-3
+            title="Foto de perfil"
 
-                rounded-2xl
 
-                text-white
+            onClick={()=>{}}
 
-                transition
 
-                ${
+          />
 
-                  language === item.id
 
-                  ? "bg-white/30"
 
-                  : "bg-white/10 hover:bg-white/20"
+        </div>
 
-                }
 
-              `}
 
 
-            >
 
 
-              {item.name}
 
+        <div className="my-6 border-t border-white/10"/>
 
-            </button>
 
 
 
-          ))
 
 
 
-        }
+        <div className="space-y-3">
 
 
 
-      </div>
+          <Row
 
 
+            icon={<Globe size={20}/>}
 
 
+            title={texts.language}
 
 
+            value={currentLanguage}
 
 
-      <div className="space-y-3">
+            onClick={()=>setLanguageOpen(true)}
 
 
+          />
 
 
 
-        <button
 
 
-          onClick={()=>navigate("/profile/edit")}
 
 
-          className="
-            w-full
-            flex
-            items-center
-            gap-3
-            p-4
-            rounded-2xl
-            bg-white/10
-            text-white
-          "
 
+          <Row
 
-        >
 
+            icon={<Palette size={20}/>}
 
-          <UserRoundPen size={20}/>
 
+            title={texts.theme}
 
-          {texts.editProfile}
 
+            value={currentTheme}
 
-        </button>
 
+            onClick={()=>setThemeOpen(true)}
 
 
+          />
 
 
 
 
-        <button
 
 
-          className="
-            w-full
-            flex
-            items-center
-            gap-3
-            p-4
-            rounded-2xl
-            bg-white/10
-            text-white
-          "
 
 
-        >
+          <SwitchRow
 
 
-          <Palette size={20}/>
+            icon={<MessageCircle size={20}/>}
 
 
-          {texts.theme}
+            title="Frases motivadoras"
 
 
-        </button>
+            checked={user.settings.motivation}
 
 
+            onChange={(value)=>
 
 
+              updateSettings({
 
+                motivation:value
 
+              })
 
 
-        <button
+            }
 
 
-          className="
-            w-full
-            flex
-            items-center
-            gap-3
-            p-4
-            rounded-2xl
-            bg-white/10
-            text-white
-          "
+          />
 
 
-        >
 
 
-          <Bell size={20}/>
 
 
-          {texts.notifications}
 
 
-        </button>
+          <SwitchRow
 
 
+            icon={<Bell size={20}/>}
 
 
+            title={texts.notifications}
 
 
+            checked={user.settings.notifications}
 
-        <button
 
+            onChange={(value)=>
 
-          className="
-            w-full
-            flex
-            items-center
-            gap-3
-            p-4
-            rounded-2xl
-            bg-white/10
-            text-white
-          "
 
+              updateSettings({
 
-        >
+                notifications:value
 
+              })
 
-          <Info size={20}/>
 
+            }
 
-          {texts.information}
 
+          />
 
-        </button>
 
 
+        </div>
 
 
 
-      </div>
 
 
 
 
+        <div className="my-6 border-t border-white/10"/>
 
-    </section>
 
 
+
+
+
+
+        <Row
+
+
+          icon={<Info size={20}/>}
+
+
+          title={texts.information}
+
+
+          onClick={()=>{}}
+
+
+        />
+
+
+
+
+
+      </section>
+
+
+
+
+
+
+
+      <LanguageModal
+
+
+        open={languageOpen}
+
+
+        close={()=>setLanguageOpen(false)}
+
+
+      />
+
+
+
+
+
+
+
+      <ThemeModal
+
+
+        open={themeOpen}
+
+
+        close={()=>setThemeOpen(false)}
+
+
+      />
+
+
+
+    </>
 
   );
 
 
 }
-
 
 
 export default SettingsCard;
