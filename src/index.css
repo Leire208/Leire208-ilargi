@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
+:root{
+
+  --bottom-nav-height: 112px;
+
+}
 
 html,
 body,
-#root {
+#root{
 
-  margin: 0;
-
-  padding: 0;
-
-  min-height: 100%;
-
+  margin:0;
+  padding:0;
+  min-height:100%;
   font-family:
     Inter,
     system-ui,
@@ -21,18 +23,42 @@ body,
 
 }
 
+*{
 
-
-* {
-
-  box-sizing: border-box;
+  box-sizing:border-box;
 
 }
 
+body{
 
+  overflow-x:hidden;
 
-body {
+}
 
-  overflow-x: hidden;
+.page-content{
+
+  min-height:100vh;
+
+  padding-bottom:calc(
+    var(--bottom-nav-height) + env(safe-area-inset-bottom)
+  );
+
+}
+
+.modal-overlay{
+
+  position:fixed;
+
+  inset:0;
+
+  z-index:9998;
+
+}
+
+.modal-content{
+
+  position:relative;
+
+  z-index:9999;
 
 }

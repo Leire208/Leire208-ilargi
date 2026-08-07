@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, Check } from "lucide-react";
 
 import AddEventModal from "./AddEventModal";
 
 import { useEvents } from "../../Context/EventContext";
+import { useTasks } from "../../Context/TaskContext";
 import { useLanguage } from "../../Context/LanguageContext";
-
 
 function DaySheet({
 
@@ -17,256 +17,261 @@ function DaySheet({
 
 }) {
 
-
   const [showModal, setShowModal] = useState(false);
-
 
   const { events, removeEvent } = useEvents();
 
-  const { language, texts } = useLanguage();
+  const {
+
+    tasks,
+
+    removeTask,
+
+    updateTask
+
+  } = useTasks();
+
+  const {
+
+    language,
+
+    texts
+
+  } = useLanguage();
 
 
 
+  const items = useMemo(() => {
+
+    if (!date) return [];
 
 
 
-  const dayEvents = useMemo(()=>{
+    const sameDay = (value) => {
 
+      if (!value) return false;
 
-    if(!date) return [];
-
-
-
-    return events.filter(event=>{
-
-
-      const eventDate = new Date(event.date);
-
-
+      const d = new Date(value);
 
       return (
 
-        eventDate.getDate() === date.getDate() &&
+        d.getDate() === date.getDate() &&
 
-        eventDate.getMonth() === date.getMonth() &&
+        d.getMonth() === date.getMonth() &&
 
-        eventDate.getFullYear() === date.getFullYear()
+        d.getFullYear() === date.getFullYear()
 
       );
 
-
-    });
-
-
-  },[events,date]);
+    };
 
 
 
+    const calendarEvents = events
+
+      .filter(event => sameDay(event.date))
+
+      .map(event => ({
+
+        ...event,
+
+        type: "event"
+
+      }));
 
 
 
+    const calendarTasks = tasks
 
-  if(!open || !date) return null;
+      .filter(task => sameDay(task.date))
+
+      .map(task => ({
+
+        ...task,
+
+        type: "task"
+
+      }));
 
 
 
+    return [
+
+      ...calendarEvents,
+
+      ...calendarTasks
+
+    ];
 
 
 
+  }, [
+
+    events,
+
+    tasks,
+
+    date
+
+  ]);
 
 
-  function addEvent(){
 
+  if (!open || !date) return null;
+
+
+
+  function addEvent() {
 
     close();
 
-
-    setTimeout(()=>{
-
+    setTimeout(() => {
 
       setShowModal(true);
 
-
-    },100);
-
+    }, 100);
 
   }
 
 
 
+  function completeTask(task) {
 
+    updateTask(
 
-
-
-  return (
-
-
-    <>
-
-
+      task.id,
 
       {
 
+        completed: !task.completed
 
-        open && (
+      }
 
+    );
 
-          <div
+  }
+  return (
 
+    <>
 
-            className="
-              fixed
-              inset-0
-              bg-black/40
-              backdrop-blur-sm
-              z-[80]
-              flex
-              items-end
-            "
+      <div
 
+        className="
+          fixed
+          inset-0
+          bg-black/40
+          backdrop-blur-sm
+          z-[80]
+          flex
+          items-end
+        "
 
-            onClick={close}
+        onClick={close}
 
+      >
 
-          >
+        <section
 
+          onClick={(e)=>e.stopPropagation()}
 
+          className="
+            w-full
+            rounded-t-[40px]
+            bg-white/10
+            backdrop-blur-3xl
+            border-t
+            border-white/20
+            p-8
+            max-h-[80vh]
+            overflow-y-auto
+          "
 
-            <section
+        >
 
+          <div className="flex justify-between items-center mb-8">
 
-              onClick={(e)=>e.stopPropagation()}
-
-
-              className="
-                w-full
-                rounded-t-[40px]
-                bg-white/10
-                backdrop-blur-3xl
-                border-t
-                border-white/20
-                p-8
-              "
-
-
-            >
-
-
-
-
-
-              <div className="flex justify-between items-center mb-8">
-
-
-                <h2 className="text-3xl text-white font-bold">
-
-
-                  {
-                    date.toLocaleDateString(
-
-                      language === "eu"
-
-                      ? "eu-ES"
-
-                      : "es-ES",
-
-                      {
-
-                        weekday:"long",
-
-                        day:"numeric",
-
-                        month:"long"
-
-                      }
-
-                    )
-                  }
-
-
-                </h2>
-
-
-
-
-
-                <button onClick={close}>
-
-
-                  <X className="text-white"/>
-
-
-                </button>
-
-
-
-              </div>
-
-
-
-
-
-
-
+            <h2 className="text-3xl text-white font-bold">
 
               {
 
-                dayEvents.length === 0 && (
+                date.toLocaleDateString(
 
+                  language === "eu"
 
-                  <p className="text-white/60 mb-6">
+                    ? "eu-ES"
 
+                    : "es-ES",
 
-                    {texts.noEvents}
+                  {
 
+                    weekday:"long",
 
-                  </p>
+                    day:"numeric",
 
+                    month:"long"
+
+                  }
 
                 )
 
-
               }
 
+            </h2>
+
+            <button onClick={close}>
+
+              <X className="text-white"/>
+
+            </button>
+
+          </div>
 
 
 
 
 
+          {
 
+            items.length === 0 && (
 
-              {
+              <p className="text-white/60 mb-6">
 
+                {texts.noEvents}
 
-                dayEvents.map(event=>(
+              </p>
 
+            )
 
-
-                  <div
-
-
-                    key={event.id}
-
-
-                    className="
-                      rounded-2xl
-                      bg-white/10
-                      p-4
-                      mb-4
-                    "
-
-
-                  >
+          }
 
 
 
 
+
+          {
+
+            items.map(item=>(
+
+              <div
+
+                key={`${item.type}-${item.id}`}
+
+                className="
+                  rounded-2xl
+                  bg-white/10
+                  p-4
+                  mb-4
+                "
+
+              >
+
+                <div className="flex justify-between items-start">
+
+                  <div>
 
                     <div className="flex items-center gap-3">
 
-
                       <div
-
 
                         className="
                           w-4
@@ -274,149 +279,193 @@ function DaySheet({
                           rounded-full
                         "
 
-
                         style={{
 
-                          background:event.color || "white"
+                          background:
+
+                            item.type === "task"
+
+                              ? item.completed
+
+                                ? "#22c55e"
+
+                                : "#60a5fa"
+
+                              : item.color || "#ffffff"
 
                         }}
 
-
                       />
 
+                      <h3
 
+                        className={`
 
+                          text-white
 
-                      <h3 className="text-white font-semibold">
+                          font-semibold
 
+                          ${
 
-                        {event.title}
+                            item.completed
 
+                              ? "line-through opacity-60"
+
+                              : ""
+
+                          }
+
+                        `}
+
+                      >
+
+                        {item.title}
 
                       </h3>
 
-
-
                     </div>
 
-
-
-
-
-
-                    <p className="text-white/70 mt-2">
-
-
-                      {event.startTime || "--:--"}
+                    <p className="text-white/60 text-sm mt-2">
 
                       {
 
-                        event.endTime &&
+                        item.type === "task"
 
-                        ` - ${event.endTime}`
+                          ? "📝 Tarea"
+
+                          : "📅 Evento"
 
                       }
 
-
                     </p>
 
+                    {
+
+                      item.type === "event" && (
+
+                        <p className="text-white/70 mt-2">
+
+                          {item.startTime || "--:--"}
+
+                          {
+
+                            item.endTime &&
+
+                            ` - ${item.endTime}`
+
+                          }
+
+                        </p>
+
+                      )
+
+                    }
+
+                  </div>
 
 
 
 
+
+                  <div className="flex gap-2">
+
+                    {
+
+                      item.type === "task" && (
+
+                        <button
+
+                          onClick={() => completeTask(item)}
+
+                          className="
+                            p-3
+                            rounded-xl
+                            bg-green-500/20
+                            text-green-200
+                          "
+
+                        >
+
+                          <Check size={18}/>
+
+                        </button>
+
+                      )
+
+                    }
 
                     <button
 
+                      onClick={() => {
 
-                      onClick={()=>removeEvent(event.id)}
+                        if(item.type==="task"){
 
+                          removeTask(item.id);
+
+                        }else{
+
+                          removeEvent(item.id);
+
+                        }
+
+                      }}
 
                       className="
-                        mt-4
                         p-3
                         rounded-xl
                         bg-red-500/20
                         text-red-200
                       "
 
-
                     >
-
 
                       <Trash2 size={18}/>
 
-
                     </button>
-
-
-
 
                   </div>
 
+                </div>
 
-                ))
+              </div>
 
+            ))
 
-              }
-
-
-
-
+          }
 
 
 
 
 
-              <button
+          <button
 
+            onClick={addEvent}
 
-                onClick={addEvent}
+            className="
+              mt-4
+              w-full
+              py-4
+              rounded-2xl
+              bg-white/20
+              text-white
+              font-semibold
+              flex
+              justify-center
+              items-center
+              gap-2
+            "
 
+          >
 
-                className="
-                  mt-4
-                  w-full
-                  py-4
-                  rounded-2xl
-                  bg-white/20
-                  text-white
-                  font-semibold
-                  flex
-                  justify-center
-                  items-center
-                  gap-2
-                "
+            <Plus/>
 
+            {texts.addEvent}
 
-              >
+          </button>
 
+        </section>
 
-                <Plus/>
-
-
-                {texts.addEvent}
-
-
-              </button>
-
-
-
-
-
-            </section>
-
-
-
-          </div>
-
-
-        )
-
-
-      }
-
-
-
+      </div>
 
 
 
@@ -424,27 +473,18 @@ function DaySheet({
 
       <AddEventModal
 
-
         open={showModal}
 
-
-        close={()=>setShowModal(false)}
-
+        close={() => setShowModal(false)}
 
         date={date}
 
-
       />
-
-
 
     </>
 
-
   );
 
-
 }
-
 
 export default DaySheet;

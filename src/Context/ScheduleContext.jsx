@@ -1,44 +1,20 @@
 import { createContext, useContext, useState } from "react";
 
-
-const ScheduleContext = createContext();
-
-
-
+const ScheduleContext = createContext(null);
 
 export function ScheduleProvider({ children }) {
 
+  const [classes, setClasses] = useState(() => {
 
-  const [classes, setClasses] = useState(()=>{
+    const saved = localStorage.getItem("ilargi-schedule");
 
-
-    const saved = localStorage.getItem(
-
-      "ilargi-schedule"
-
-    );
-
-
-    return saved
-
-      ? JSON.parse(saved)
-
-      : [];
-
+    return saved ? JSON.parse(saved) : [];
 
   });
 
-
-
-
-
-
-
-  function saveClasses(data){
-
+  function save(data) {
 
     setClasses(data);
-
 
     localStorage.setItem(
 
@@ -48,158 +24,104 @@ export function ScheduleProvider({ children }) {
 
     );
 
-
   }
 
+  function addClass(item) {
 
-
-
-
-
-
-
-  function addClass(item){
-
-
-    saveClasses([
-
+    save([
 
       ...classes,
 
-
       {
 
-
-        id:Date.now(),
-
+        id: crypto.randomUUID(),
 
         ...item
 
-
       }
-
 
     ]);
 
-
   }
 
+  function removeClass(id) {
 
-
-
-
-
-
-
-  function removeClass(id){
-
-
-    saveClasses(
-
+    save(
 
       classes.filter(
 
-        item=>item.id !== id
+        item => item.id !== id
 
       )
 
-
     );
-
 
   }
 
+  function updateClass(id, data) {
 
+    save(
 
-
-
-
-
-
-  function updateClass(id,data){
-
-
-    saveClasses(
-
-
-      classes.map(item=>
-
+      classes.map(item =>
 
         item.id === id
 
-        ? {
+          ? {
 
-            ...item,
+              ...item,
 
-            ...data
+              ...data
 
-          }
+            }
 
-        : item
-
+          : item
 
       )
 
-
     );
-
 
   }
 
-
-
-
-
-
-
-
   return (
-
 
     <ScheduleContext.Provider
 
-
       value={{
-
 
         classes,
 
-
         addClass,
-
 
         removeClass,
 
-
         updateClass
-
 
       }}
 
-
     >
-
 
       {children}
 
-
     </ScheduleContext.Provider>
-
 
   );
 
-
 }
 
+export function useSchedule() {
 
+  const context = useContext(ScheduleContext);
 
+  if (!context) {
 
+    throw new Error(
 
+      "useSchedule debe usarse dentro de ScheduleProvider"
 
-export function useSchedule(){
+    );
 
+  }
 
-  return useContext(ScheduleContext);
-
+  return context;
 
 }

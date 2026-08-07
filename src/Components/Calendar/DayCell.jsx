@@ -1,6 +1,5 @@
 import { useTheme } from "../../Context/ThemeContext";
 
-
 function DayCell({
 
   date,
@@ -13,25 +12,15 @@ function DayCell({
 
 }) {
 
-
   const { styles } = useTheme();
 
 
 
-  if(!date){
+  if (!date) {
 
-
-    return (
-
-      <div className="h-20"/>
-
-    );
-
+    return <div className="h-20" />;
 
   }
-
-
-
 
 
 
@@ -49,24 +38,21 @@ function DayCell({
 
 
 
+  const dayEvents = events.filter(item => {
 
-  const dayEvents = events.filter(event=>{
+    if (!item.date) return false;
 
-
-    const eventDate = new Date(event.date);
-
-
+    const itemDate = new Date(item.date);
 
     return (
 
-      eventDate.getDate() === date.getDate() &&
+      itemDate.getDate() === date.getDate() &&
 
-      eventDate.getMonth() === date.getMonth() &&
+      itemDate.getMonth() === date.getMonth() &&
 
-      eventDate.getFullYear() === date.getFullYear()
+      itemDate.getFullYear() === date.getFullYear()
 
     );
-
 
   });
 
@@ -74,17 +60,31 @@ function DayCell({
 
 
 
+  function getColor(item) {
+
+    if (item.type === "task") {
+
+      return item.completed
+
+        ? "#22c55e"
+
+        : "#60a5fa";
+
+    }
+
+    return item.color || "#ffffff";
+
+  }
+
+
 
 
 
   return (
 
-
     <button
 
-
-      onClick={()=>setSelectedDate(date)}
-
+      onClick={() => setSelectedDate(date)}
 
       className={`
 
@@ -110,24 +110,19 @@ function DayCell({
 
           isSelected
 
-          ? "bg-white/30 scale-105"
+            ? "bg-white/30 scale-105"
 
-          : "hover:bg-white/10"
+            : "hover:bg-white/10"
 
         }
 
       `}
 
-
     >
-
-
 
       <span className="text-white font-semibold">
 
-
         {date.getDate()}
-
 
       </span>
 
@@ -135,65 +130,40 @@ function DayCell({
 
 
 
-
-      <div className="flex gap-1 mt-2">
-
-
+      <div className="flex gap-1 mt-2 flex-wrap justify-center">
 
         {
 
           dayEvents
 
-          .slice(0,4)
+            .slice(0, 4)
 
-          .map(event=>(
+            .map(item => (
 
+              <span
 
-            <span
+                key={item.id}
 
+                className="w-2 h-2 rounded-full"
 
-              key={event.id}
+                style={{
 
+                  background: getColor(item)
 
-              className="
-                w-2
-                h-2
-                rounded-full
-              "
+                }}
 
+              />
 
-              style={{
-
-
-                background:event.color || "#ffffff"
-
-
-              }}
-
-
-            />
-
-
-          ))
-
+            ))
 
         }
 
-
-
       </div>
 
-
-
-
-
     </button>
-
 
   );
 
 }
-
-
 
 export default DayCell;

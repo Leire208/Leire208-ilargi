@@ -1,4 +1,4 @@
-import { 
+import {
   Home,
   CalendarDays,
   Clock3,
@@ -10,228 +10,148 @@ import { NavLink } from "react-router-dom";
 
 import { useLanguage } from "../Context/LanguageContext";
 
-
-
-function BottomNav(){
-
+function BottomNav() {
 
   const { texts } = useLanguage();
 
-
-
-
   const items = [
 
-
     {
-
-      name:texts.home || "Inicio",
-
-      icon:Home,
-
-      path:"/"
-
+      name: texts.home || "Inicio",
+      icon: Home,
+      path: "/"
     },
 
-
     {
-
-      name:texts.calendar || "Calendario",
-
-      icon:CalendarDays,
-
-      path:"/calendar"
-
+      name: texts.calendar || "Calendario",
+      icon: CalendarDays,
+      path: "/calendar"
     },
 
-
     {
-
-      name:texts.schedule || "Horario",
-
-      icon:Clock3,
-
-      path:"/schedule"
-
+      name: texts.schedule || "Horario",
+      icon: Clock3,
+      path: "/schedule"
     },
 
-
     {
-
-      name:texts.subjects || "Asignaturas",
-
-      icon:BookOpen,
-
-      path:"/subjects"
-
+      name: texts.subjects || "Asignaturas",
+      icon: BookOpen,
+      path: "/subjects"
     },
 
-
     {
-
-      name:texts.profile || "Perfil",
-
-      icon:User,
-
-      path:"/profile"
-
+      name: texts.profile || "Perfil",
+      icon: User,
+      path: "/profile"
     }
-
 
   ];
 
-
-
-
-
-
-
-
   return (
-
-
 
     <nav
 
-
       className="
         fixed
-        bottom-0
         left-0
         right-0
-        z-50
-        px-4
-        pb-6
+        bottom-5
+        z-[200]
+        pointer-events-none
       "
-
 
     >
 
-
-
-
       <div
-
 
         className="
           max-w-xl
           mx-auto
-          rounded-[32px]
-          bg-white/10
-          backdrop-blur-3xl
-          border
-          border-white/20
-          shadow-xl
-          flex
-          justify-around
-          items-center
-          py-3
+          px-4
         "
-
 
       >
 
+        <div
 
+          className="
+            pointer-events-auto
+            rounded-[34px]
+            border
+            border-white/20
+            bg-white/10
+            backdrop-blur-3xl
+            shadow-2xl
+            flex
+            justify-around
+            items-center
+            py-4
+          "
 
+        >
 
+          {
 
+            items.map(item => {
 
-        {
+              const Icon = item.icon;
 
+              return (
 
-          items.map(item=>{
+                <NavLink
 
+                  key={item.path}
 
-            const Icon = item.icon;
+                  to={item.path}
 
+                  className={({ isActive }) => `
 
+                    flex
+                    flex-col
+                    items-center
+                    gap-1
+                    transition-all
+                    duration-300
 
-            return (
+                    ${
 
+                      isActive
 
-              <NavLink
+                        ? "text-white scale-110"
 
+                        : "text-white/60 hover:text-white"
 
-                key={item.path}
+                    }
 
+                  `}
 
-                to={item.path}
+                >
 
+                  <Icon size={22} />
 
-                className={({isActive})=>`
+                  <span className="text-[11px]">
 
-                  flex
+                    {item.name}
 
-                  flex-col
+                  </span>
 
-                  items-center
+                </NavLink>
 
-                  gap-1
+              );
 
-                  text-xs
+            })
 
-                  transition
+          }
 
-                  ${
-                    isActive
-
-                    ? "text-white scale-110"
-
-                    : "text-white/60"
-
-                  }
-
-                `}
-
-
-              >
-
-
-
-                <Icon size={22}/>
-
-
-                <span>
-
-
-                  {item.name}
-
-
-                </span>
-
-
-
-              </NavLink>
-
-
-            );
-
-
-          })
-
-
-        }
-
-
-
-
-
-
+        </div>
 
       </div>
 
-
-
-
     </nav>
-
-
 
   );
 
-
 }
-
-
 
 export default BottomNav;

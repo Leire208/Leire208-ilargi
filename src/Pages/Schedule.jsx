@@ -15,7 +15,7 @@ function Schedule() {
           mx-auto
           px-6
           pt-8
-          pb-36
+          pb-48
         "
 
       >
