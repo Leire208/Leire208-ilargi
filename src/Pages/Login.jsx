@@ -1,302 +1,228 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAuth } from "../Context/AuthContext";
 import SkyBackground from "../Components/SkyBackground";
+import { useAuth } from "../Context/AuthContext";
 
+function Login() {
 
-function Login(){
+  const { login, loginGoogle } = useAuth();
 
+  const navigate = useNavigate();
 
-const { login, loginGoogle } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-const navigate = useNavigate();
+  async function submit(e) {
 
+    e.preventDefault();
 
+    setError("");
 
-const [email,setEmail] = useState("");
+    try {
 
-const [password,setPassword] = useState("");
+      await login(email, password);
 
-const [error,setError] = useState("");
+      navigate("/", {
+        replace: true
+      });
 
+    } catch (error) {
 
+      console.error(error);
 
+      setError(
+        "Correo o contraseña incorrectos."
+      );
 
+    }
 
-async function submit(e){
+  }
 
-e.preventDefault();
+  async function google() {
 
-setError("");
+    setError("");
 
+    try {
 
+      await loginGoogle();
 
-try{
+      navigate("/", {
+        replace: true
+      });
 
+    } catch (error) {
 
-await login(email,password);
+      console.error(error);
 
+      setError(
+        error.code || "No se pudo iniciar sesión con Google."
+      );
 
-navigate("/");
+    }
 
+  }
 
-}catch(err){
+  return (
 
+    <SkyBackground>
 
-setError(
+      <main
+        className="
+          min-h-screen
+          flex
+          items-center
+          justify-center
+          px-6
+        "
+      >
 
-"Correo o contraseña incorrectos"
+        <section
+          className="
+            w-full
+            max-w-md
+            rounded-3xl
+            bg-white/10
+            backdrop-blur-3xl
+            p-8
+            shadow-2xl
+            border
+            border-white/10
+          "
+        >
 
-);
+          <h1
+            className="
+              text-4xl
+              font-bold
+              text-white
+              text-center
+              mb-2
+            "
+          >
+            Bienvenida a Ilargi
+          </h1>
 
+          <p
+            className="
+              text-center
+              text-white/70
+              mb-8
+            "
+          >
+            Inicia sesión para continuar
+          </p>
+
+          <form
+            onSubmit={submit}
+            className="space-y-4"
+          >
+
+            <input
+              type="email"
+              placeholder="Correo electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="
+                w-full
+                rounded-2xl
+                bg-white/20
+                px-4
+                py-3
+                text-white
+                placeholder:text-white/60
+                outline-none
+              "
+            />
+
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="
+                w-full
+                rounded-2xl
+                bg-white/20
+                px-4
+                py-3
+                text-white
+                placeholder:text-white/60
+                outline-none
+              "
+            />
+
+            {
+
+              error && (
+
+                <p className="text-red-300 text-sm">
+
+                  {error}
+
+                </p>
+
+              )
+
+            }
+
+            <button
+              type="submit"
+              className="
+                w-full
+                py-3
+                rounded-2xl
+                bg-white/20
+                hover:bg-white/30
+                transition
+                text-white
+                font-semibold
+              "
+            >
+              Entrar
+            </button>
+
+          </form>
+
+          <button
+            onClick={google}
+            className="
+              w-full
+              mt-4
+              py-3
+              rounded-2xl
+              bg-white/10
+              hover:bg-white/20
+              transition
+              text-white
+              font-semibold
+            "
+          >
+            Continuar con Google
+          </button>
+
+          <button
+            onClick={() => navigate("/register")}
+            className="
+              w-full
+              mt-6
+              text-white/70
+              hover:text-white
+              transition
+            "
+          >
+            Crear cuenta
+          </button>
+
+        </section>
+
+      </main>
+
+    </SkyBackground>
+
+  );
 
 }
-
-
-
-}
-
-
-
-
-
-
-
-
-async function google(){
-
-
-try{
-
-
-await loginGoogle();
-
-
-navigate("/");
-
-
-}catch(err){
-
-
-setError(
-
-"No se pudo iniciar sesión con Google"
-
-);
-
-
-}
-
-
-}
-
-
-
-
-
-
-return (
-
-<SkyBackground>
-
-
-<main className="
-min-h-screen
-flex
-items-center
-justify-center
-px-6
-">
-
-
-<section className="
-w-full
-max-w-md
-rounded-3xl
-p-8
-bg-white/10
-backdrop-blur-xl
-shadow-xl
-">
-
-
-<h1 className="
-text-3xl
-font-bold
-text-white
-mb-8
-">
-
-Bienvenida a Ilargi
-
-</h1>
-
-
-
-
-
-<form
-
-onSubmit={submit}
-
-className="space-y-4"
-
->
-
-
-
-<input
-
-type="email"
-
-placeholder="Correo electrónico"
-
-value={email}
-
-onChange={(e)=>setEmail(e.target.value)}
-
-className="
-w-full
-rounded-2xl
-bg-white/20
-px-4
-py-3
-text-white
-"
-
-/>
-
-
-
-
-<input
-
-type="password"
-
-placeholder="Contraseña"
-
-value={password}
-
-onChange={(e)=>setPassword(e.target.value)}
-
-className="
-w-full
-rounded-2xl
-bg-white/20
-px-4
-py-3
-text-white
-"
-
-/>
-
-
-
-
-
-
-{
-
-error && (
-
-<p className="text-red-200">
-
-{error}
-
-</p>
-
-)
-
-}
-
-
-
-
-
-
-<button
-
-className="
-w-full
-py-4
-rounded-2xl
-bg-white/20
-text-white
-font-semibold
-"
-
->
-
-Entrar
-
-</button>
-
-
-
-
-</form>
-
-
-
-
-
-
-<button
-
-onClick={google}
-
-className="
-w-full
-mt-4
-py-4
-rounded-2xl
-bg-white/10
-text-white
-"
-
->
-
-Continuar con Google
-
-</button>
-
-
-
-
-
-
-<button
-
-onClick={()=>navigate("/register")}
-
-className="
-mt-6
-text-white/70
-"
-
->
-
-Crear cuenta
-
-</button>
-
-
-
-
-
-</section>
-
-
-</main>
-
-
-</SkyBackground>
-
-);
-
-
-}
-
 
 export default Login;

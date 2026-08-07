@@ -1,322 +1,239 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAuth } from "../Context/AuthContext";
 import SkyBackground from "../Components/SkyBackground";
+import { useAuth } from "../Context/AuthContext";
 
+function Register() {
 
-function Register(){
+  const { register, loginGoogle } = useAuth();
 
+  const navigate = useNavigate();
 
-const { register } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-const navigate = useNavigate();
+  async function submit(e) {
 
+    e.preventDefault();
 
-const [email,setEmail] = useState("");
+    setError("");
 
-const [password,setPassword] = useState("");
+    try {
 
-const [error,setError] = useState("");
+      await register(
+        email,
+        password
+      );
 
+      navigate("/", {
+        replace: true
+      });
 
+    } catch (err) {
 
+      console.error(err);
 
+      if (err.code === "auth/email-already-in-use") {
 
-async function submit(e){
+        setError(
+          "Este correo ya tiene una cuenta."
+        );
 
+      } else if (err.code === "auth/weak-password") {
 
-e.preventDefault();
+        setError(
+          "La contraseña debe tener al menos 6 caracteres."
+        );
 
-setError("");
+      } else {
 
+        setError(
+          "No se pudo crear la cuenta."
+        );
 
+      }
 
-try{
+    }
 
+  }
 
-await register(
+  async function google() {
 
-email,
+    setError("");
 
-password
+    try {
 
-);
+      await loginGoogle();
 
+      navigate("/", {
+        replace: true
+      });
 
+    } catch (err) {
 
-navigate("/");
+      console.error(err);
 
+      setError(
+        "No se pudo iniciar sesión con Google."
+      );
 
-}catch(err){
+    }
 
+  }
 
-console.log(err);
+  return (
 
+    <SkyBackground>
 
-if(err.code === "auth/email-already-in-use"){
+      <main
+        className="
+          min-h-screen
+          flex
+          items-center
+          justify-center
+          px-6
+        "
+      >
 
+        <section
+          className="
+            w-full
+            max-w-md
+            rounded-3xl
+            bg-white/10
+            backdrop-blur-3xl
+            p-8
+            shadow-2xl
+            border
+            border-white/10
+          "
+        >
 
-setError(
+          <h1
+            className="
+              text-4xl
+              font-bold
+              text-white
+              text-center
+              mb-2
+            "
+          >
+            Crear cuenta
+          </h1>
 
-"Este correo ya tiene una cuenta"
+          <p
+            className="
+              text-center
+              text-white/70
+              mb-8
+            "
+          >
+            Bienvenida a Ilargi
+          </p>
 
-);
+          <form
+            onSubmit={submit}
+            className="space-y-4"
+          >
 
+            <input
+              type="email"
+              placeholder="Correo electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="
+                w-full
+                rounded-2xl
+                bg-white/20
+                px-4
+                py-3
+                text-white
+                placeholder:text-white/60
+                outline-none
+              "
+            />
 
-}else if(err.code === "auth/weak-password"){
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="
+                w-full
+                rounded-2xl
+                bg-white/20
+                px-4
+                py-3
+                text-white
+                placeholder:text-white/60
+                outline-none
+              "
+            />
 
+            {error && (
+              <p className="text-red-300 text-sm">
+                {error}
+              </p>
+            )}
 
-setError(
+            <button
+              type="submit"
+              className="
+                w-full
+                py-3
+                rounded-2xl
+                bg-white/20
+                hover:bg-white/30
+                transition
+                text-white
+                font-semibold
+              "
+            >
+              Crear cuenta
+            </button>
 
-"La contraseña debe tener al menos 6 caracteres"
+          </form>
 
-);
+          <button
+            onClick={google}
+            className="
+              w-full
+              mt-4
+              py-3
+              rounded-2xl
+              bg-white/10
+              hover:bg-white/20
+              transition
+              text-white
+              font-semibold
+            "
+          >
+            Continuar con Google
+          </button>
 
+          <button
+            onClick={() => navigate("/login")}
+            className="
+              w-full
+              mt-6
+              text-white/70
+              hover:text-white
+              transition
+            "
+          >
+            Ya tengo cuenta
+          </button>
 
-}else{
+        </section>
 
+      </main>
 
-setError(
+    </SkyBackground>
 
-"No se pudo crear la cuenta"
-
-);
-
+  );
 
 }
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-return (
-
-
-<SkyBackground>
-
-
-<main className="
-min-h-screen
-flex
-items-center
-justify-center
-px-6
-">
-
-
-<section className="
-w-full
-max-w-md
-rounded-3xl
-p-8
-bg-white/10
-backdrop-blur-xl
-shadow-xl
-">
-
-
-<h1 className="
-text-3xl
-font-bold
-text-white
-mb-8
-">
-
-
-Crear cuenta
-
-
-</h1>
-
-
-
-
-
-
-
-<form
-
-onSubmit={submit}
-
-className="space-y-4"
-
->
-
-
-
-<input
-
-
-type="email"
-
-
-placeholder="Correo electrónico"
-
-
-value={email}
-
-
-onChange={(e)=>setEmail(e.target.value)}
-
-
-className="
-w-full
-rounded-2xl
-bg-white/20
-px-4
-py-3
-text-white
-"
-
-
-/>
-
-
-
-
-
-
-
-<input
-
-
-type="password"
-
-
-placeholder="Contraseña"
-
-
-value={password}
-
-
-onChange={(e)=>setPassword(e.target.value)}
-
-
-className="
-w-full
-rounded-2xl
-bg-white/20
-px-4
-py-3
-text-white
-"
-
-
-/>
-
-
-
-
-
-
-
-
-
-{
-
-error && (
-
-
-<p className="text-red-200">
-
-
-{error}
-
-
-</p>
-
-
-)
-
-}
-
-
-
-
-
-
-
-<button
-
-
-className="
-w-full
-py-4
-rounded-2xl
-bg-white/20
-text-white
-font-semibold
-"
-
-
->
-
-
-Crear cuenta
-
-
-</button>
-
-
-
-
-
-</form>
-
-
-
-
-
-
-
-
-<button
-
-
-onClick={()=>navigate("/login")}
-
-
-className="
-mt-6
-text-white/70
-"
-
-
->
-
-
-Ya tengo cuenta
-
-
-</button>
-
-
-
-
-
-</section>
-
-
-</main>
-
-
-</SkyBackground>
-
-
-);
-
-
-}
-
-
 
 export default Register;
