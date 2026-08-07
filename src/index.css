@@ -1,18 +1,16 @@
 @import "tailwindcss";
 
-:root{
-
-  --bottom-nav-height: 112px;
-
-}
 
 html,
 body,
-#root{
+#root {
 
-  margin:0;
-  padding:0;
-  min-height:100%;
+  margin: 0;
+
+  padding: 0;
+
+  min-height: 100%;
+
   font-family:
     Inter,
     system-ui,
@@ -21,44 +19,51 @@ body,
     "Segoe UI",
     sans-serif;
 
-}
-
-*{
-
-  box-sizing:border-box;
+  box-sizing: border-box;
 
 }
 
-body{
 
-  overflow-x:hidden;
 
-}
+* {
 
-.page-content{
-
-  min-height:100vh;
-
-  padding-bottom:calc(
-    var(--bottom-nav-height) + env(safe-area-inset-bottom)
-  );
+  box-sizing: border-box;
 
 }
 
-.modal-overlay{
 
-  position:fixed;
 
-  inset:0;
+body {
 
-  z-index:9998;
+  overflow-x: hidden;
+
+  padding-bottom: 120px;
 
 }
 
-.modal-content{
 
-  position:relative;
 
-  z-index:9999;
+button,
+input,
+select,
+textarea {
+
+  font-family: inherit;
+
+}
+
+
+
+::-webkit-scrollbar {
+
+  width: 8px;
+
+}
+
+
+
+::-webkit-scrollbar-thumb {
+
+  border-radius: 20px;
 
 }

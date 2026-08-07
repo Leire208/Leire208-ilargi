@@ -1,296 +1,169 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc
+} from "firebase/firestore";
+
+import { db } from "../Firebase/firebase";
+
+import { useAuth } from "./AuthContext";
 
 
 const EventContext = createContext(null);
 
 
 
-
-
 export function EventProvider({ children }) {
 
 
+const { currentUser } = useAuth();
 
-  const [events, setEvents] = useState(()=>{
 
+const [events, setEvents] = useState([]);
 
-    try {
+const [loading, setLoading] = useState(true);
 
 
-      const saved = localStorage.getItem(
 
-        "ilargi-events"
 
-      );
 
+useEffect(()=>{
 
-      return saved
 
-        ? JSON.parse(saved)
+async function loadEvents(){
 
-        : [];
 
+if(!currentUser){
 
+setEvents([]);
 
-    } catch {
+setLoading(false);
 
+return;
 
-      return [];
+}
 
 
-    }
 
+const ref = collection(
 
-  });
+db,
 
+"users",
 
+currentUser.uid,
 
+"events"
 
+);
 
 
 
+const snapshot = await getDocs(ref);
 
 
-  function saveEvents(data){
 
+const data = snapshot.docs.map(item => ({
 
 
-    setEvents(data);
+id:item.id,
 
 
+...item.data()
 
-    localStorage.setItem(
 
-      "ilargi-events",
+}));
 
-      JSON.stringify(data)
 
-    );
 
+setEvents(data);
 
 
-  }
+setLoading(false);
 
 
+}
 
 
 
+loadEvents();
 
 
+},[currentUser]);
 
 
 
 
-  function addEvent(event){
 
 
 
-    const newEvent = {
 
 
-      id: Date.now(),
+async function addEvent(event){
 
 
-      color: event.color || "#ffffff",
+if(!currentUser) return;
 
 
-      ...event
 
+const ref = collection(
 
-    };
+db,
 
+"users",
 
+currentUser.uid,
 
+"events"
 
+);
 
-    saveEvents([
 
 
-      ...events,
+const newEvent = {
 
 
-      newEvent
+color: event.color || "#ffffff",
 
 
+...event
 
-    ]);
 
+};
 
 
-  }
 
+const result = await addDoc(
 
+ref,
 
+newEvent
 
+);
 
 
 
+setEvents(prev => [
 
 
-  function removeEvent(id){
+...prev,
 
 
+{
 
-    saveEvents(
+id:result.id,
 
+...newEvent
 
-      events.filter(
+}
 
 
-        event => event.id !== id
-
-
-      )
-
-
-    );
-
-
-  }
-
-
-
-
-
-
-
-
-
-  function updateEvent(id,data){
-
-
-
-    saveEvents(
-
-
-
-      events.map(event =>
-
-
-
-        event.id === id
-
-
-          ? {
-
-
-              ...event,
-
-
-              ...data
-
-
-            }
-
-
-          : event
-
-
-
-      )
-
-
-
-    );
-
-
-  }
-
-
-
-
-
-
-
-
-
-  function getEventsByDate(date){
-
-
-
-    return events.filter(event=>{
-
-
-      const eventDate = new Date(event.date);
-
-
-
-      return (
-
-
-        eventDate.getDate() === date.getDate()
-
-        &&
-
-        eventDate.getMonth() === date.getMonth()
-
-        &&
-
-        eventDate.getFullYear() === date.getFullYear()
-
-
-
-      );
-
-
-    });
-
-
-
-  }
-
-
-
-
-
-
-
-
-
-  return (
-
-
-
-    <EventContext.Provider
-
-
-      value={{
-
-
-        events,
-
-
-        addEvent,
-
-
-        removeEvent,
-
-
-        updateEvent,
-
-
-        getEventsByDate
-
-
-
-      }}
-
-
-
-    >
-
-
-
-      {children}
-
-
-
-    </EventContext.Provider>
-
-
-
-  );
-
+]);
 
 
 }
@@ -302,30 +175,220 @@ export function EventProvider({ children }) {
 
 
 
+
+async function removeEvent(id){
+
+
+if(!currentUser) return;
+
+
+
+await deleteDoc(
+
+doc(
+
+db,
+
+"users",
+
+currentUser.uid,
+
+"events",
+
+id
+
+)
+
+);
+
+
+
+setEvents(prev =>
+
+
+prev.filter(
+
+event => event.id !== id
+
+)
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+async function updateEvent(id,data){
+
+
+if(!currentUser) return;
+
+
+
+await updateDoc(
+
+doc(
+
+db,
+
+"users",
+
+currentUser.uid,
+
+"events",
+
+id
+
+),
+
+data
+
+);
+
+
+
+setEvents(prev =>
+
+
+prev.map(event =>
+
+
+event.id === id
+
+?
+
+{
+
+...event,
+
+...data
+
+}
+
+:
+
+event
+
+
+)
+
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+function getEventsByDate(date){
+
+
+return events.filter(event=>{
+
+
+const eventDate = new Date(event.date);
+
+
+
+return (
+
+eventDate.getDate() === date.getDate()
+
+&&
+
+eventDate.getMonth() === date.getMonth()
+
+&&
+
+eventDate.getFullYear() === date.getFullYear()
+
+);
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+
+return (
+
+<EventContext.Provider
+
+value={{
+
+events,
+
+loading,
+
+addEvent,
+
+removeEvent,
+
+updateEvent,
+
+getEventsByDate
+
+}}
+
+>
+
+
+{!loading && children}
+
+
+</EventContext.Provider>
+
+
+);
+
+
+}
+
+
+
+
+
 export function useEvents(){
 
 
-
-  const context = useContext(EventContext);
-
-
-
-  if(!context){
-
-
-    throw new Error(
-
-      "useEvents debe usarse dentro de EventProvider"
-
-    );
-
-
-  }
+const context = useContext(EventContext);
 
 
 
-  return context;
+if(!context){
 
+throw new Error(
+
+"useEvents debe usarse dentro de EventProvider"
+
+);
+
+}
+
+
+
+return context;
 
 
 }

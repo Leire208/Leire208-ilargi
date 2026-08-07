@@ -1,277 +1,157 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc
+} from "firebase/firestore";
+
+import { db } from "../Firebase/firebase";
+
+import { useAuth } from "./AuthContext";
 
 
 const TaskContext = createContext(null);
 
 
 
-
-
 export function TaskProvider({ children }) {
 
 
+const { currentUser } = useAuth();
 
-  const [tasks, setTasks] = useState(()=>{
 
+const [tasks, setTasks] = useState([]);
 
-    try {
+const [loading, setLoading] = useState(true);
 
 
-      const saved = localStorage.getItem(
 
-        "ilargi-tasks"
 
-      );
 
+useEffect(()=>{
 
-      const parsed = saved
 
-        ? JSON.parse(saved)
+async function loadTasks(){
 
-        : [];
 
+if(!currentUser){
 
+setTasks([]);
 
-      return parsed.map(task => ({
+setLoading(false);
 
+return;
 
-        id: task.id || Date.now(),
+}
 
 
-        completed: task.completed || false,
 
+const ref = collection(
+  db,
+  "users",
+  currentUser.uid,
+  "tasks"
+);
 
-        ...task
 
 
+const snapshot = await getDocs(ref);
 
-      }));
 
 
+const data = snapshot.docs.map(item => ({
 
-    } catch {
+id:item.id,
 
+...item.data()
 
-      return [];
+}));
 
 
-    }
 
+setTasks(data);
 
 
-  });
+setLoading(false);
 
 
+}
 
 
 
+loadTasks();
 
 
+},[currentUser]);
 
 
-  function saveTasks(data){
 
 
 
-    setTasks(data);
 
 
 
-    localStorage.setItem(
 
-      "ilargi-tasks",
+async function addTask(task){
 
-      JSON.stringify(data)
 
-    );
+if(!currentUser) return;
 
 
 
-  }
+const ref = collection(
 
+db,
 
+"users",
 
+currentUser.uid,
 
+"tasks"
 
+);
 
 
 
+const newTask = {
 
-  function addTask(task){
 
+completed:false,
 
+...task
 
-    const newTask = {
 
+};
 
 
-      id: Date.now(),
 
+const result = await addDoc(
 
+ref,
 
-      completed:false,
+newTask
 
+);
 
 
-      ...task
 
+setTasks(prev => [
 
+...prev,
 
-    };
+{
 
+id:result.id,
 
+...newTask
 
+}
 
-
-
-    saveTasks([
-
-
-      ...tasks,
-
-
-      newTask
-
-
-
-    ]);
-
-
-
-  }
-
-
-
-
-
-
-
-
-
-  function removeTask(id){
-
-
-
-    saveTasks(
-
-
-
-      tasks.filter(
-
-
-        task => task.id !== id
-
-
-      )
-
-
-    );
-
-
-
-  }
-
-
-
-
-
-
-
-
-
-  function updateTask(id,data){
-
-
-
-    saveTasks(
-
-
-
-      tasks.map(task =>
-
-
-
-        task.id === id
-
-
-          ? {
-
-
-              ...task,
-
-
-              ...data
-
-
-
-            }
-
-
-          : task
-
-
-
-      )
-
-
-
-    );
-
-
-
-  }
-
-
-
-
-
-
-
-
-
-  return (
-
-
-
-    <TaskContext.Provider
-
-
-
-      value={{
-
-
-
-        tasks,
-
-
-        addTask,
-
-
-        removeTask,
-
-
-        updateTask
-
-
-
-      }}
-
-
-
-    >
-
-
-
-      {children}
-
-
-
-    </TaskContext.Provider>
-
-
-
-  );
-
+]);
 
 
 }
@@ -284,32 +164,174 @@ export function TaskProvider({ children }) {
 
 
 
+async function removeTask(id){
+
+
+if(!currentUser) return;
+
+
+
+await deleteDoc(
+
+doc(
+
+db,
+
+"users",
+
+currentUser.uid,
+
+"tasks",
+
+id
+
+)
+
+);
+
+
+
+setTasks(prev =>
+
+prev.filter(
+
+task => task.id !== id
+
+)
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+async function updateTask(id,data){
+
+
+if(!currentUser) return;
+
+
+
+await updateDoc(
+
+doc(
+
+db,
+
+"users",
+
+currentUser.uid,
+
+"tasks",
+
+id
+
+),
+
+data
+
+);
+
+
+
+setTasks(prev =>
+
+
+prev.map(task =>
+
+
+task.id === id
+
+?
+
+{
+
+...task,
+
+...data
+
+}
+
+:
+
+task
+
+
+)
+
+
+);
+
+
+}
+
+
+
+
+
+
+
+return (
+
+<TaskContext.Provider
+
+value={{
+
+tasks,
+
+loading,
+
+addTask,
+
+removeTask,
+
+updateTask
+
+}}
+
+>
+
+
+{!loading && children}
+
+
+</TaskContext.Provider>
+
+
+);
+
+
+}
+
+
+
+
+
 export function useTasks(){
 
 
-
-  const context = useContext(TaskContext);
-
-
-
-  if(!context){
+const context = useContext(TaskContext);
 
 
 
-    throw new Error(
+if(!context){
 
-      "useTasks debe usarse dentro de TaskProvider"
+throw new Error(
+"useTasks debe usarse dentro de TaskProvider"
+);
 
-    );
-
-
-
-  }
+}
 
 
 
-  return context;
-
+return context;
 
 
 }

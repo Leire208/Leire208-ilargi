@@ -1,22 +1,25 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import SkyBackground from "../Components/SkyBackground";
-import Layout from "../Components/Layout";
 
 import CalendarHeader from "../Components/Calendar/CalendarHeader";
 import MonthGrid from "../Components/Calendar/MonthGrid";
-import DaySheet from "../Components/Calendar/DaySheet";
+import DayAgenda from "../Components/Calendar/DayAgenda";
 
 import { useEvents } from "../Context/EventContext";
 import { useTasks } from "../Context/TaskContext";
 
+
+
 function Calendar() {
 
-  const [currentDate, setCurrentDate] = useState(new Date());
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentDate,setCurrentDate] = useState(new Date());
 
-  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const [selectedDate,setSelectedDate] = useState(new Date());
+
+
 
   const { events } = useEvents();
 
@@ -24,55 +27,14 @@ function Calendar() {
 
 
 
-  const calendarItems = useMemo(() => {
-
-    const taskEvents = tasks.map(task => ({
-
-      id: `task-${task.id}`,
-
-      title: task.title,
-
-      date: task.date,
-
-      color: "#60a5fa",
-
-      type: "task",
-
-      completed: task.completed,
-
-      subject: task.subject
-
-    }));
 
 
 
-    const normalEvents = events.map(event => ({
+  function previousMonth(){
 
-      ...event,
-
-      type: "event"
-
-    }));
-
-
-
-    return [
-
-      ...normalEvents,
-
-      ...taskEvents
-
-    ];
-
-
-
-  }, [events, tasks]);
-
-
-
-  function previousMonth() {
 
     setCurrentDate(
+
 
       new Date(
 
@@ -84,15 +46,23 @@ function Calendar() {
 
       )
 
+
     );
+
 
   }
 
 
 
-  function nextMonth() {
+
+
+
+
+  function nextMonth(){
+
 
     setCurrentDate(
+
 
       new Date(
 
@@ -104,84 +74,175 @@ function Calendar() {
 
       )
 
+
     );
+
 
   }
 
 
 
-  function selectDay(date) {
+
+
+
+
+  function selectDay(date){
+
 
     setSelectedDate(date);
 
-    setSheetOpen(true);
 
   }
+
+
+
+
+
+
+
+  const calendarItems = [
+
+
+    ...events,
+
+
+
+    ...tasks
+
+      .filter(task=>task.date)
+
+      .map(task=>(
+
+
+        {
+
+          id:"task-" + task.id,
+
+          title:task.title,
+
+          date:task.date,
+
+          color:"#60a5fa",
+
+          type:"task"
+
+        }
+
+
+      ))
+
+
+
+  ];
+
+
+
+
+
 
 
 
   return (
 
+
+
     <SkyBackground>
 
-      <Layout>
 
-        <main
+      <main
 
-          className="
-            min-h-screen
-            max-w-4xl
-            mx-auto
-            px-6
-            pt-8
-          "
 
-        >
+        className="
+          min-h-screen
+          max-w-4xl
+          mx-auto
+          px-6
+          pt-8
+          pb-44
+        "
 
-          <CalendarHeader
 
-            currentDate={currentDate}
-
-            previousMonth={previousMonth}
-
-            nextMonth={nextMonth}
-
-          />
+      >
 
 
 
-          <MonthGrid
-
-            currentDate={currentDate}
-
-            selectedDate={selectedDate}
-
-            setSelectedDate={selectDay}
-
-            events={calendarItems}
-
-          />
-
-        </main>
-
-      </Layout>
 
 
+        <CalendarHeader
 
-      <DaySheet
 
-        open={sheetOpen}
+          currentDate={currentDate}
 
-        close={() => setSheetOpen(false)}
 
-        date={selectedDate}
+          previousMonth={previousMonth}
 
-      />
+
+          nextMonth={nextMonth}
+
+
+        />
+
+
+
+
+
+
+
+        <MonthGrid
+
+
+          currentDate={currentDate}
+
+
+          selectedDate={selectedDate}
+
+
+          setSelectedDate={selectDay}
+
+
+          events={calendarItems}
+
+
+        />
+
+
+
+
+
+
+
+
+        <DayAgenda
+
+
+          date={selectedDate}
+
+
+          events={events}
+
+
+          tasks={tasks}
+
+
+        />
+
+
+
+
+
+
+      </main>
+
+
 
     </SkyBackground>
 
+
   );
 
+
 }
+
+
 
 export default Calendar;

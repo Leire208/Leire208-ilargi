@@ -1,205 +1,228 @@
-import { X } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 
 import { useSchedule } from "../../Context/ScheduleContext";
-
+import { useTheme } from "../../Context/ThemeContext";
 
 
 function EditClassModal({
 
-  open,
+open,
 
-  close,
+close,
 
-  item
+item
 
 }) {
 
 
+const { removeClass } = useSchedule();
 
-  const { removeClass } = useSchedule();
+const { styles } = useTheme();
 
 
 
+if(!open || !item) return null;
 
-  if(!open || !item) return null;
 
 
 
 
+async function remove(){
 
 
-  function remove(){
+await removeClass(item.id);
 
 
-    removeClass(item.id);
+close();
 
 
-    close();
+}
 
 
-  }
 
 
 
+return (
 
 
+<div
 
 
-  return (
+className="
+fixed
+inset-0
+z-[130]
+bg-black/40
+backdrop-blur-sm
+flex
+items-center
+justify-center
+px-6
+"
 
 
-    <div
+onClick={close}
 
 
-      className="
-        fixed
-        inset-0
-        z-[130]
-        bg-black/40
-        backdrop-blur-sm
-        flex
-        items-center
-        justify-center
-        px-6
-      "
+>
 
 
-      onClick={close}
 
+<section
 
-    >
 
+onClick={(e)=>e.stopPropagation()}
 
 
-      <section
+className={`
 
+w-full
 
-        onClick={(e)=>e.stopPropagation()}
+max-w-md
 
+rounded-3xl
 
-        className="
-          rounded-3xl
-          bg-white/10
-          backdrop-blur-3xl
-          p-6
-          w-full
-          max-w-md
-        "
+p-6
 
+shadow-2xl
 
-      >
+${styles.card}
 
+`}
 
 
-        <div className="flex justify-between mb-6">
+>
 
 
-          <h2 className="text-white text-2xl font-bold">
 
 
-            {item.subjectName}
 
+<div className="flex justify-between items-center mb-6">
 
-          </h2>
 
+<h2 className="text-2xl font-bold text-white">
 
 
-          <button onClick={close}>
+{item.subjectName}
 
 
-            <X className="text-white"/>
+</h2>
 
 
-          </button>
 
 
+<button onClick={close}>
 
-        </div>
 
+<X className="text-white"/>
 
 
+</button>
 
 
+</div>
 
 
-        <p className="text-white/70 mb-2">
 
 
-          {item.day} · {item.start}
 
 
-        </p>
 
+<div className="space-y-3 text-white/80">
 
 
+<p>
 
 
+Día: {item.day}
 
-        {
 
+</p>
 
-          item.room && (
 
 
-            <p className="text-white/70 mb-6">
+<p>
 
 
-              Aula: {item.room}
+Hora: {item.start}
 
 
-            </p>
+</p>
 
 
-          )
 
+{
 
-        }
+item.room && (
 
+<p>
 
+Aula: {item.room}
 
+</p>
 
+)
 
+}
 
 
 
-        <button
+</div>
 
 
-          onClick={remove}
 
 
-          className="
-            w-full
-            py-4
-            rounded-2xl
-            bg-red-500/20
-            text-red-200
-            font-semibold
-          "
 
 
-        >
 
 
-          Eliminar clase
 
+<button
 
-        </button>
 
+onClick={remove}
 
 
+className="
+mt-6
+w-full
+py-4
+rounded-2xl
+bg-red-500/20
+text-red-200
+font-semibold
+flex
+items-center
+justify-center
+gap-2
+hover:bg-red-500/30
+transition
+"
 
 
+>
 
-      </section>
 
+<Trash2 size={18}/>
 
 
-    </div>
+Eliminar clase
 
 
-  );
+</button>
 
+
+
+
+
+</section>
+
+
+
+</div>
+
+
+);
 
 }
 

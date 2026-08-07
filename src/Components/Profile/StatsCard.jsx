@@ -4,8 +4,7 @@ import {
   Flame
 } from "lucide-react";
 
-
-import { useClasses } from "../../Context/ClassContext";
+import { useSubjects } from "../../Context/SubjectContext";
 import { useTasks } from "../../Context/TaskContext";
 import { useTheme } from "../../Context/ThemeContext";
 import { useLanguage } from "../../Context/LanguageContext";
@@ -15,11 +14,14 @@ import { useLanguage } from "../../Context/LanguageContext";
 function StatsCard() {
 
 
-  const { classes } = useClasses();
+  const { subjects } = useSubjects();
+
 
   const { tasks } = useTasks();
 
+
   const { styles } = useTheme();
+
 
   const { texts } = useLanguage();
 
@@ -65,6 +67,7 @@ function StatsCard() {
 
 
 
+
       <h2 className="text-xl font-semibold text-white mb-6">
 
 
@@ -92,13 +95,14 @@ function StatsCard() {
           icon={<BookOpen size={20}/>}
 
 
-          label={texts.classes || "Clases"}
+          label={texts.subjects || "Asignaturas"}
 
 
-          value={classes.length}
+          value={subjects.length}
 
 
         />
+
 
 
 
@@ -118,6 +122,7 @@ function StatsCard() {
 
 
         />
+
 
 
 
@@ -156,13 +161,24 @@ function StatsCard() {
 
   );
 
+
 }
 
 
 
 
 
-function Row({icon,label,value}) {
+
+
+function Row({
+
+  icon,
+
+  label,
+
+  value
+
+}) {
 
 
   return (
@@ -172,16 +188,23 @@ function Row({icon,label,value}) {
     <div className="flex justify-between items-center">
 
 
+
       <div className="flex gap-3 items-center text-white">
 
 
         {icon}
 
 
-        <span>{label}</span>
+        <span>
+
+          {label}
+
+        </span>
 
 
       </div>
+
+
 
 
 
@@ -196,6 +219,8 @@ function Row({icon,label,value}) {
 
 
 
+
+
     </div>
 
 
@@ -204,6 +229,8 @@ function Row({icon,label,value}) {
 
 
 }
+
+
 
 
 

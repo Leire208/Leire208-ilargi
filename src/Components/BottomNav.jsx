@@ -6,152 +6,254 @@ import {
   User
 } from "lucide-react";
 
+
 import { NavLink } from "react-router-dom";
 
-import { useLanguage } from "../Context/LanguageContext";
 
-function BottomNav() {
+import { useLanguage } from "../Context/LanguageContext";
+import { useTheme } from "../Context/ThemeContext";
+
+
+
+function BottomNav(){
+
+
 
   const { texts } = useLanguage();
 
+  const { styles } = useTheme();
+
+
+
+
+
   const items = [
 
-    {
-      name: texts.home || "Inicio",
-      icon: Home,
-      path: "/"
-    },
 
     {
-      name: texts.calendar || "Calendario",
-      icon: CalendarDays,
-      path: "/calendar"
+
+      name:texts.home || "Inicio",
+
+      icon:Home,
+
+      path:"/"
+
     },
 
-    {
-      name: texts.schedule || "Horario",
-      icon: Clock3,
-      path: "/schedule"
-    },
+
 
     {
-      name: texts.subjects || "Asignaturas",
-      icon: BookOpen,
-      path: "/subjects"
+
+      name:texts.calendar || "Calendario",
+
+      icon:CalendarDays,
+
+      path:"/calendar"
+
     },
 
+
+
     {
-      name: texts.profile || "Perfil",
-      icon: User,
-      path: "/profile"
+
+      name:texts.schedule || "Horario",
+
+      icon:Clock3,
+
+      path:"/schedule"
+
+    },
+
+
+
+    {
+
+      name:texts.subjects || "Asignaturas",
+
+      icon:BookOpen,
+
+      path:"/subjects"
+
+    },
+
+
+
+    {
+
+      name:texts.profile || "Perfil",
+
+      icon:User,
+
+      path:"/profile"
+
     }
+
 
   ];
 
+
+
+
+
+
+
   return (
+
+
 
     <nav
 
+
       className="
         fixed
+        bottom-0
         left-0
         right-0
-        bottom-5
-        z-[200]
+        z-[100]
+        px-4
+        pb-4
         pointer-events-none
       "
 
+
     >
+
+
+
+
 
       <div
 
-        className="
+
+        className={`
           max-w-xl
           mx-auto
-          px-4
-        "
+          rounded-[32px]
+          backdrop-blur-3xl
+          border
+          shadow-xl
+          flex
+          justify-around
+          items-center
+          py-3
+          px-2
+          pointer-events-auto
+          ${styles.nav}
+        `}
+
 
       >
 
-        <div
 
-          className="
-            pointer-events-auto
-            rounded-[34px]
-            border
-            border-white/20
-            bg-white/10
-            backdrop-blur-3xl
-            shadow-2xl
-            flex
-            justify-around
-            items-center
-            py-4
-          "
 
-        >
 
-          {
 
-            items.map(item => {
 
-              const Icon = item.icon;
 
-              return (
+        {
 
-                <NavLink
 
-                  key={item.path}
+          items.map(item=>{
 
-                  to={item.path}
 
-                  className={({ isActive }) => `
+            const Icon = item.icon;
 
-                    flex
-                    flex-col
-                    items-center
-                    gap-1
-                    transition-all
-                    duration-300
 
-                    ${
 
-                      isActive
 
-                        ? "text-white scale-110"
+            return (
 
-                        : "text-white/60 hover:text-white"
 
-                    }
+              <NavLink
 
-                  `}
 
-                >
+                key={item.path}
 
-                  <Icon size={22} />
 
-                  <span className="text-[11px]">
+                to={item.path}
 
-                    {item.name}
 
-                  </span>
+                className={({isActive})=>`
 
-                </NavLink>
+                  flex
 
-              );
+                  flex-col
 
-            })
+                  items-center
 
-          }
+                  justify-center
 
-        </div>
+                  gap-1
+
+                  text-xs
+
+                  transition
+
+                  min-w-[55px]
+
+                  ${
+                    isActive
+
+                    ? "text-white scale-110"
+
+                    : "text-white/60"
+
+                  }
+
+                `}
+
+
+              >
+
+
+
+
+                <Icon size={22}/>
+
+
+
+                <span>
+
+
+                  {item.name}
+
+
+                </span>
+
+
+
+              </NavLink>
+
+
+            );
+
+
+          })
+
+
+        }
+
+
+
+
+
+
 
       </div>
 
+
+
+
+
     </nav>
+
+
 
   );
 
+
 }
+
+
 
 export default BottomNav;
