@@ -1,5 +1,6 @@
 import { useTheme } from "../../Context/ThemeContext";
 
+
 function DayCell({
 
   date,
@@ -18,7 +19,11 @@ function DayCell({
 
   if (!date) {
 
-    return <div className="h-20" />;
+    return (
+
+      <div className="h-20" />
+
+    );
 
   }
 
@@ -28,35 +33,41 @@ function DayCell({
 
     selectedDate &&
 
-    date.getDate() === selectedDate.getDate() &&
+    date.getDate() ===
+      selectedDate.getDate() &&
 
-    date.getMonth() === selectedDate.getMonth() &&
+    date.getMonth() ===
+      selectedDate.getMonth() &&
 
-    date.getFullYear() === selectedDate.getFullYear();
-
-
-
-
-
-  const dayEvents = events.filter(item => {
-
-    if (!item.date) return false;
-
-    const itemDate = new Date(item.date);
-
-    return (
-
-      itemDate.getDate() === date.getDate() &&
-
-      itemDate.getMonth() === date.getMonth() &&
-
-      itemDate.getFullYear() === date.getFullYear()
-
-    );
-
-  });
+    date.getFullYear() ===
+      selectedDate.getFullYear();
 
 
+
+  const dayEvents =
+    events.filter(item => {
+
+      if (!item.date) return false;
+
+
+      const itemDate =
+        new Date(item.date);
+
+
+      return (
+
+        itemDate.getDate() ===
+          date.getDate() &&
+
+        itemDate.getMonth() ===
+          date.getMonth() &&
+
+        itemDate.getFullYear() ===
+          date.getFullYear()
+
+      );
+
+    });
 
 
 
@@ -65,18 +76,24 @@ function DayCell({
     if (item.type === "task") {
 
       return item.completed
-
         ? "#22c55e"
-
         : "#60a5fa";
 
     }
 
-    return item.color || "#ffffff";
+
+    if (item.type === "schedule") {
+
+      return item.color ||
+        "#60a5fa";
+
+    }
+
+
+    return item.color ||
+      "#ffffff";
 
   }
-
-
 
 
 
@@ -84,7 +101,9 @@ function DayCell({
 
     <button
 
-      onClick={() => setSelectedDate(date)}
+      onClick={() =>
+        setSelectedDate(date)
+      }
 
       className={`
 
@@ -120,7 +139,10 @@ function DayCell({
 
     >
 
-      <span className="text-white font-semibold">
+      <span className="
+        text-white
+        font-semibold
+      ">
 
         {date.getDate()}
 
@@ -128,35 +150,41 @@ function DayCell({
 
 
 
+      <div className="
+        flex
+        gap-1
+        mt-2
+        flex-wrap
+        justify-center
+        max-w-[45px]
+      ">
 
+        {dayEvents
 
-      <div className="flex gap-1 mt-2 flex-wrap justify-center">
+          .slice(0, 4)
 
-        {
+          .map(item => (
 
-          dayEvents
+            <span
 
-            .slice(0, 4)
+              key={item.id}
 
-            .map(item => (
+              className="
+                w-2
+                h-2
+                rounded-full
+              "
 
-              <span
+              style={{
 
-                key={item.id}
+                background:
+                  getColor(item)
 
-                className="w-2 h-2 rounded-full"
+              }}
 
-                style={{
+            />
 
-                  background: getColor(item)
-
-                }}
-
-              />
-
-            ))
-
-        }
+          ))}
 
       </div>
 
@@ -165,5 +193,6 @@ function DayCell({
   );
 
 }
+
 
 export default DayCell;

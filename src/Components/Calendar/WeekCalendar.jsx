@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 
 import { useTheme } from "../../Context/ThemeContext";
-import { useSchedule } from "../../Context/ScheduleContext";
-
-import AddClassModal from "./AddClassModal";
-import EditClassModal from "./EditClassModal";
+import AddClassModal from "../Schedule/AddClassModal";
+import EditClassModal from "../Schedule/EditClassModal";
 
 const DAYS = [
   { key: "L", label: "L" },
@@ -18,27 +16,36 @@ const START_HOUR = 0;
 const END_HOUR = 24;
 
 /*
- * Más compacto para que las 24 horas
- * no ocupen una barbaridad.
+ * Calendario más compacto que el horario.
+ * 24 horas × 48px = 1152px.
  */
 const HOUR_HEIGHT = 48;
 
-function WeekGrid() {
+function WeekCalendar({
+  weekStart,
+  classes = [],
+  selectedDate,
+  setSelectedDate,
+}) {
   const { styles } = useTheme();
-  const { classes } = useSchedule();
 
   const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [selectedClass, setSelectedClass] =
+    useState(null);
 
-  const [selected, setSelected] = useState({
+  const [selectedSlot, setSelectedSlot] = useState({
     day: null,
     hour: null,
   });
 
-  const [selectedClass, setSelectedClass] = useState(null);
+  const [currentTime, setCurrentTime] =
+    useState(new Date());
 
-  const [currentTime, setCurrentTime] = useState(new Date());
-
+  /*
+   * Actualiza la hora cada minuto para mantener
+   * actualizada la línea de "ahora".
+   */
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -47,11 +54,33 @@ function WeekGrid() {
     return () => clearInterval(interval);
   }, []);
 
+  function openAdd(day, hour) {
+    const date = getDateForDay(
+      weekStart,
+      getDayIndex(day)
+    );
+
+    setSelectedDate(date);
+
+    setSelectedSlot({
+      day,
+      hour,
+    });
+
+    setAddOpen(true);
+  }
+
+  function openEdit(item) {
+    setSelectedClass(item);
+    setEditOpen(true);
+  }
+
   function getClassesForDay(day) {
     return classes
       .filter((item) => item.day === day)
       .map((item) => {
-        const startMinutes = timeToMinutes(item.start);
+        const startMinutes =
+          timeToMinutes(item.start);
 
         const endMinutes = item.end
           ? timeToMinutes(item.end)
@@ -74,35 +103,6 @@ function WeekGrid() {
       );
   }
 
-  function openAdd(day, minutes) {
-    setSelected({
-      day,
-      hour: minutesToTime(minutes),
-    });
-
-    setAddOpen(true);
-  }
-
-  function openEdit(item) {
-    setSelectedClass(item);
-    setEditOpen(true);
-  }
-
-  function getCurrentTimePosition() {
-    const minutes =
-      currentTime.getHours() * 60 +
-      currentTime.getMinutes();
-
-    if (minutes < 0 || minutes > 1440) {
-      return null;
-    }
-
-    return minutes * (HOUR_HEIGHT / 60);
-  }
-
-  const currentTimePosition =
-    getCurrentTimePosition();
-
   return (
     <>
       <section
@@ -113,12 +113,18 @@ function WeekGrid() {
           ${styles.card}
         `}
       >
-        <div className="w-full">
+        <div
+          className="
+            overflow-x-auto
+            overflow-y-auto
+            max-h-[65vh]
+          "
+        >
           <div className="min-w-[760px]">
 
-            {/* ================================ */}
-            {/* CABECERA                          */}
-            {/* ================================ */}
+            {/* ============================= */}
+            {/* HEADER                         */}
+            {/* ============================= */}
 
             <div
               className="
@@ -126,8 +132,8 @@ function WeekGrid() {
                 grid-cols-[58px_repeat(5,minmax(130px,1fr))]
                 sticky
                 top-0
-                z-40
-                bg-black/35
+                z-30
+                bg-black/25
                 backdrop-blur-2xl
                 border-b
                 border-white/10
@@ -135,34 +141,103 @@ function WeekGrid() {
             >
               <div />
 
-              {DAYS.map((day) => (
-                <div
-                  key={day.key}
-                  className="
-                    py-2.5
-                    text-center
-                    border-l
-                    border-white/10
-                  "
-                >
-                  <div
-                    className="
-                      text-[11px]
-                      font-semibold
-                      uppercase
-                      tracking-wider
-                      text-white/70
-                    "
+              {DAYS.map((day, index) => {
+                const date =
+                  getDateForDay(
+                    weekStart,
+                    index
+                  );
+
+                const isSelected =
+                  isSameDay(
+                    date,
+                    selectedDate
+                  );
+
+                const isToday =
+                  isSameDay(
+                    date,
+                    currentTime
+                  );
+
+                return (
+                  <button
+                    key={day.key}
+                    type="button"
+                    onClick={() =>
+                      setSelectedDate(date)
+                    }
+                    className={`
+                      relative
+                      py-2.5
+                      text-center
+                      border-l
+                      border-white/10
+                      transition-all
+                      duration-200
+                      ${
+                        isSelected
+                          ? "bg-white/[0.12]"
+                          : "hover:bg-white/[0.06]"
+                      }
+                    `}
                   >
-                    {day.label}
-                  </div>
-                </div>
-              ))}
+                    {/* Día actual */}
+
+                    {isToday && (
+                      <span
+                        className="
+                          absolute
+                          top-0
+                          left-1/2
+                          -translate-x-1/2
+                          w-7
+                          h-[2px]
+                          rounded-full
+                          bg-white
+                          shadow-[0_0_10px_rgba(255,255,255,0.8)]
+                        "
+                      />
+                    )}
+
+                    <div
+                      className={`
+                        text-[10px]
+                        font-semibold
+                        uppercase
+                        tracking-wider
+                        ${
+                          isToday
+                            ? "text-white"
+                            : "text-white/50"
+                        }
+                      `}
+                    >
+                      {day.label}
+                    </div>
+
+                    <div
+                      className={`
+                        mt-0.5
+                        text-base
+                        font-bold
+                        ${
+                          isToday
+                            ? "text-white"
+                            : "text-white/80"
+                        }
+                      `}
+                    >
+                      {date.getDate()}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
-            {/* ================================ */}
-            {/* CUERPO 24H                        */}
-            {/* ================================ */}
+            {/* ============================= */}
+            {/* BODY 24 HORAS                  */}
+            {/* ============================= */}
 
             <div
               className="
@@ -174,9 +249,9 @@ function WeekGrid() {
               }}
             >
 
-              {/* ============================== */}
-              {/* HORAS                           */}
-              {/* ============================== */}
+              {/* ============================= */}
+              {/* HORAS                          */}
+              {/* ============================= */}
 
               <div
                 className="
@@ -197,13 +272,13 @@ function WeekGrid() {
                       text-center
                       text-[10px]
                       font-medium
-                      text-white/45
+                      text-white/40
                     "
                     style={{
                       top:
                         hour *
                           HOUR_HEIGHT +
-                        5,
+                        4,
                     }}
                   >
                     {String(hour).padStart(
@@ -222,7 +297,7 @@ function WeekGrid() {
                     text-center
                     text-[10px]
                     font-medium
-                    text-white/45
+                    text-white/40
                   "
                   style={{
                     top:
@@ -235,18 +310,24 @@ function WeekGrid() {
                 </div>
               </div>
 
-              {/* ============================== */}
-              {/* DÍAS                            */}
-              {/* ============================== */}
+              {/* ============================= */}
+              {/* DÍAS                          */}
+              {/* ============================= */}
 
-              {DAYS.map((day) => {
+              {DAYS.map((day, dayIndex) => {
                 const dayClasses =
                   getClassesForDay(day.key);
 
+                const date =
+                  getDateForDay(
+                    weekStart,
+                    dayIndex
+                  );
+
                 const isToday =
-                  day.key ===
-                  getDayKeyFromDate(
-                    new Date()
+                  isSameDay(
+                    date,
+                    currentTime
                   );
 
                 return (
@@ -264,9 +345,9 @@ function WeekGrid() {
                     `}
                   >
 
-                    {/* ======================== */}
-                    {/* HORAS                      */}
-                    {/* ======================== */}
+                    {/* =========================== */}
+                    {/* HORAS                        */}
+                    {/* =========================== */}
 
                     {Array.from({
                       length: 24,
@@ -277,7 +358,10 @@ function WeekGrid() {
                         onClick={() =>
                           openAdd(
                             day.key,
-                            hour * 60
+                            `${String(hour).padStart(
+                              2,
+                              "0"
+                            )}:00`
                           )
                         }
                         className="
@@ -285,8 +369,8 @@ function WeekGrid() {
                           left-0
                           right-0
                           border-t
-                          border-white/[0.09]
-                          hover:bg-white/[0.05]
+                          border-white/[0.08]
+                          hover:bg-white/[0.045]
                           transition-colors
                         "
                         style={{
@@ -296,63 +380,46 @@ function WeekGrid() {
                           height:
                             HOUR_HEIGHT,
                         }}
-                        aria-label={`Añadir clase el ${day.label} a ${String(
+                        aria-label={`Añadir clase el ${day.label} a las ${String(
                           hour
                         ).padStart(2, "0")}:00`}
                       />
                     ))}
 
-                    {/* ======================== */}
-                    {/* MEDIAS HORAS              */}
-                    {/* ======================== */}
+                    {/* =========================== */}
+                    {/* MEDIAS HORAS                 */}
+                    {/* =========================== */}
 
                     {Array.from({
                       length: 24,
-                    }).map((_, hour) => {
-                      const minutes =
-                        hour * 60 + 30;
+                    }).map((_, hour) => (
+                      <div
+                        key={`${day.key}-half-${hour}`}
+                        className="
+                          absolute
+                          left-0
+                          right-0
+                          border-t
+                          border-white/[0.03]
+                          pointer-events-none
+                        "
+                        style={{
+                          top:
+                            hour *
+                              HOUR_HEIGHT +
+                            HOUR_HEIGHT / 2,
+                        }}
+                      />
+                    ))}
 
-                      return (
-                        <button
-                          key={`${day.key}-${hour}-30`}
-                          type="button"
-                          onClick={() =>
-                            openAdd(
-                              day.key,
-                              minutes
-                            )
-                          }
-                          className="
-                            absolute
-                            left-0
-                            right-0
-                            border-t
-                            border-white/[0.035]
-                            hover:bg-white/[0.025]
-                            transition-colors
-                          "
-                          style={{
-                            top:
-                              hour *
-                                HOUR_HEIGHT +
-                              HOUR_HEIGHT / 2,
-                            height:
-                              HOUR_HEIGHT / 2,
-                          }}
-                          aria-label={`Añadir clase el ${day.label} a ${minutesToTime(
-                            minutes
-                          )}`}
-                        />
-                      );
-                    })}
-
-                    {/* ======================== */}
-                    {/* AHORA                     */}
-                    {/* ======================== */}
+                    {/* =========================== */}
+                    {/* LÍNEA DE AHORA               */}
+                    {/* =========================== */}
 
                     {isToday &&
-                      currentTimePosition !==
-                        null && (
+                      getCurrentTimePosition(
+                        currentTime
+                      ) !== null && (
                         <div
                           className="
                             absolute
@@ -363,7 +430,9 @@ function WeekGrid() {
                           "
                           style={{
                             top:
-                              currentTimePosition,
+                              getCurrentTimePosition(
+                                currentTime
+                              ),
                           }}
                         >
                           <span
@@ -384,15 +453,15 @@ function WeekGrid() {
                               h-[2px]
                               w-full
                               bg-white/80
-                              shadow-[0_0_8px_rgba(255,255,255,0.5)]
+                              shadow-[0_0_7px_rgba(255,255,255,0.45)]
                             "
                           />
                         </div>
                       )}
 
-                    {/* ======================== */}
-                    {/* CLASES                    */}
-                    {/* ======================== */}
+                    {/* =========================== */}
+                    {/* CLASES                       */}
+                    {/* =========================== */}
 
                     {dayClasses.map((item) => {
                       const pixelsPerMinute =
@@ -409,7 +478,7 @@ function WeekGrid() {
                       const height = Math.max(
                         duration *
                           pixelsPerMinute,
-                        30
+                        28
                       );
 
                       return (
@@ -426,7 +495,7 @@ function WeekGrid() {
                             right-1
                             z-10
                             rounded-xl
-                            px-2.5
+                            px-2
                             py-1.5
                             text-left
                             overflow-hidden
@@ -465,7 +534,7 @@ function WeekGrid() {
                               className="
                                 text-white
                                 font-semibold
-                                text-xs
+                                text-[11px]
                                 leading-tight
                                 truncate
                               "
@@ -473,11 +542,11 @@ function WeekGrid() {
                               {item.subjectName}
                             </div>
 
-                            {height >= 45 && (
+                            {height >= 42 && (
                               <div
                                 className="
                                   text-white/80
-                                  text-[10px]
+                                  text-[9px]
                                   mt-0.5
                                   font-medium
                                 "
@@ -492,7 +561,7 @@ function WeekGrid() {
                               </div>
                             )}
 
-                            {height >= 75 &&
+                            {height >= 70 &&
                               item.room && (
                                 <div
                                   className="
@@ -517,22 +586,22 @@ function WeekGrid() {
         </div>
       </section>
 
-      {/* ================================ */}
-      {/* NUEVA CLASE                      */}
-      {/* ================================ */}
+      {/* ============================= */}
+      {/* NUEVA CLASE                   */}
+      {/* ============================= */}
 
       <AddClassModal
         open={addOpen}
         close={() => {
           setAddOpen(false);
         }}
-        day={selected.day}
-        hour={selected.hour}
+        day={selectedSlot.day}
+        hour={selectedSlot.hour}
       />
 
-      {/* ================================ */}
-      {/* EDITAR CLASE                     */}
-      {/* ================================ */}
+      {/* ============================= */}
+      {/* EDITAR CLASE                  */}
+      {/* ============================= */}
 
       <EditClassModal
         open={editOpen}
@@ -549,6 +618,24 @@ function WeekGrid() {
 /* ================================= */
 /* HELPERS                           */
 /* ================================= */
+
+function getDateForDay(monday, dayIndex) {
+  const date = new Date(monday);
+
+  date.setDate(
+    monday.getDate() + dayIndex
+  );
+
+  return date;
+}
+
+function getDayIndex(day) {
+  const index = DAYS.findIndex(
+    (item) => item.key === day
+  );
+
+  return index === -1 ? 0 : index;
+}
 
 function timeToMinutes(time) {
   if (!time) return 0;
@@ -575,18 +662,29 @@ function minutesToTime(minutes) {
   )}:${String(mins).padStart(2, "0")}`;
 }
 
-function getDayKeyFromDate(date) {
-  const day = date.getDay();
+function getCurrentTimePosition(date) {
+  const minutes =
+    date.getHours() * 60 +
+    date.getMinutes();
 
-  const map = {
-    1: "L",
-    2: "M",
-    3: "X",
-    4: "J",
-    5: "V",
-  };
+  if (minutes < 0 || minutes > 1440) {
+    return null;
+  }
 
-  return map[day] || null;
+  return minutes * (HOUR_HEIGHT / 60);
 }
 
-export default WeekGrid;
+function isSameDay(first, second) {
+  if (!first || !second) {
+    return false;
+  }
+
+  return (
+    first.getDate() === second.getDate() &&
+    first.getMonth() === second.getMonth() &&
+    first.getFullYear() ===
+      second.getFullYear()
+  );
+}
+
+export default WeekCalendar;

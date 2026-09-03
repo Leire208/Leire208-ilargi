@@ -1,115 +1,178 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
 
 import { useLanguage } from "../../Context/LanguageContext";
 
 
 function CalendarHeader({
 
-  currentDate,
-
-  previousMonth,
-
-  nextMonth
+  weekStart,
+  previousWeek,
+  nextWeek,
+  goToday
 
 }) {
 
+  const { language } =
+    useLanguage();
 
-  const { language } = useLanguage();
 
-
-
-  const month = currentDate.toLocaleDateString(
-
+  const locale =
     language === "eu"
-
       ? "eu-ES"
+      : "es-ES";
 
-      : "es-ES",
 
-    {
+  const weekEnd =
+    new Date(weekStart);
 
-      month: "long",
 
-      year: "numeric"
-
-    }
-
+  weekEnd.setDate(
+    weekEnd.getDate() + 6
   );
 
+
+  const startText =
+    weekStart.toLocaleDateString(
+      locale,
+      {
+        day: "numeric",
+        month: "short"
+      }
+    );
+
+
+  const endText =
+    weekEnd.toLocaleDateString(
+      locale,
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      }
+    );
 
 
   return (
 
-    <header className="flex justify-between items-center mb-8">
+    <header
+      className="
+        flex
+        flex-col
+        sm:flex-row
+        sm:items-center
+        sm:justify-between
+        gap-4
+        mb-6
+      "
+    >
+
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          gap-3
+        "
+      >
+
+        <button
+          onClick={previousWeek}
+          className="
+            w-11
+            h-11
+            rounded-full
+            bg-white/10
+            backdrop-blur-xl
+            flex
+            items-center
+            justify-center
+            text-white
+            hover:bg-white/20
+            transition
+          "
+          aria-label="Semana anterior"
+        >
+
+          <ChevronLeft size={21} />
+
+        </button>
+
+
+        <div
+          className="
+            text-center
+            min-w-0
+          "
+        >
+
+          <h1
+            className="
+              text-xl
+              sm:text-2xl
+              font-bold
+              text-white
+              capitalize
+            "
+          >
+
+            {startText} — {endText}
+
+          </h1>
+
+        </div>
+
+
+        <button
+          onClick={nextWeek}
+          className="
+            w-11
+            h-11
+            rounded-full
+            bg-white/10
+            backdrop-blur-xl
+            flex
+            items-center
+            justify-center
+            text-white
+            hover:bg-white/20
+            transition
+          "
+          aria-label="Semana siguiente"
+        >
+
+          <ChevronRight size={21} />
+
+        </button>
+
+      </div>
 
 
       <button
-
-        onClick={previousMonth}
-
+        onClick={goToday}
         className="
-          w-12
-          h-12
+          self-center
+          sm:self-auto
+          px-5
+          py-2.5
           rounded-full
           bg-white/10
           backdrop-blur-xl
-          flex
-          items-center
-          justify-center
           text-white
+          text-sm
+          font-semibold
           hover:bg-white/20
           transition
         "
-
       >
 
-        <ChevronLeft/>
+        {language === "eu"
+          ? "Gaur"
+          : "Hoy"}
 
       </button>
-
-
-
-      <h1
-
-        className="
-          text-3xl
-          font-bold
-          text-white
-          capitalize
-        "
-
-      >
-
-        {month}
-
-      </h1>
-
-
-
-      <button
-
-        onClick={nextMonth}
-
-        className="
-          w-12
-          h-12
-          rounded-full
-          bg-white/10
-          backdrop-blur-xl
-          flex
-          items-center
-          justify-center
-          text-white
-          hover:bg-white/20
-          transition
-        "
-
-      >
-
-        <ChevronRight/>
-
-      </button>
-
 
     </header>
 

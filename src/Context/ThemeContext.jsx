@@ -1,334 +1,135 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 const ThemeContext = createContext(null);
 
-
 export function ThemeProvider({ children }) {
-
-
   function getAutoTheme() {
-
     const hour = new Date().getHours();
 
-
-    if (hour >= 7 && hour < 17)
-
-      return "day";
-
-
-    if (hour >= 17 && hour < 21)
-
-      return "sunset";
-
-
+    if (hour >= 7 && hour < 17) return "day";
+    if (hour >= 17 && hour < 21) return "sunset";
     return "night";
-
   }
 
-
-
-
-
-  const [mode,setMode] = useState(()=>{
-
-
-    const saved = localStorage.getItem(
-      "ilargi-theme-mode"
-    );
-
-
-    return saved || "auto";
-
-
+  const [mode, setMode] = useState(() => {
+    return localStorage.getItem("ilargi-theme-mode") || "auto";
   });
 
+  const [theme, setThemeState] = useState(() => {
+    const savedTheme = localStorage.getItem("ilargi-theme");
 
+    if (savedTheme) {
+      return savedTheme;
+    }
 
-
-
-  const [theme,setThemeState] = useState(()=>{
-
-
-    const saved = localStorage.getItem(
-      "ilargi-theme"
-    );
-
-
-    return saved || getAutoTheme();
-
-
+    return getAutoTheme();
   });
 
-
-
-
-
-
-
-
-
-  function setTheme(value){
-
-
+  function setTheme(value) {
     setMode(value);
+    localStorage.setItem("ilargi-theme-mode", value);
 
+    if (value === "auto") {
+      const automaticTheme = getAutoTheme();
 
-    localStorage.setItem(
-
-      "ilargi-theme-mode",
-
-      value
-
-    );
-
-
-
-    if(value === "auto"){
-
-
-      const auto = getAutoTheme();
-
-
-      setThemeState(auto);
-
-
-      localStorage.setItem(
-
-        "ilargi-theme",
-
-        auto
-
-      );
-
+      setThemeState(automaticTheme);
+      localStorage.setItem("ilargi-theme", automaticTheme);
 
       return;
-
-
     }
-
-
-
 
     setThemeState(value);
-
-
-    localStorage.setItem(
-
-      "ilargi-theme",
-
-      value
-
-    );
-
-
+    localStorage.setItem("ilargi-theme", value);
   }
 
+  useEffect(() => {
+    if (mode !== "auto") return;
 
+    function updateAutomaticTheme() {
+      const automaticTheme = getAutoTheme();
 
-
-
-
-
-
-
-  useEffect(()=>{
-
-
-    if(mode !== "auto") return;
-
-
-
-    function update(){
-
-
-      const auto = getAutoTheme();
-
-
-      setThemeState(auto);
-
-
-      localStorage.setItem(
-
-        "ilargi-theme",
-
-        auto
-
-      );
-
-
+      setThemeState(automaticTheme);
+      localStorage.setItem("ilargi-theme", automaticTheme);
     }
 
-
-
-
-    update();
-
-
+    updateAutomaticTheme();
 
     const interval = setInterval(
-
-      update,
-
-      60000
-
+      updateAutomaticTheme,
+      60 * 1000
     );
 
-
-
-    return ()=>clearInterval(interval);
-
-
-
-  },[mode]);
-
-
-
-
-
-
-
-
+    return () => clearInterval(interval);
+  }, [mode]);
 
   const styles = {
-
-
     day: {
-
       background:
-        "from-sky-500 via-sky-400 to-sky-600",
-
-      overlay:
-        "bg-slate-900/20",
-
+        "bg-[#79b9d8]",
       card:
-        "bg-white/30 border border-white/40 backdrop-blur-2xl",
-
+        "bg-white/[0.13] border border-white/[0.22] backdrop-blur-2xl",
       nav:
-        "bg-slate-900/30 border border-white/20 backdrop-blur-2xl",
-
+        "bg-white/[0.12] border border-white/[0.18] backdrop-blur-2xl",
       text:
         "text-white",
-
       secondary:
-        "text-white/85"
-
+        "text-white/70",
     },
-
-
-
-
 
     sunset: {
-
       background:
-        "from-orange-400 via-purple-500 to-indigo-900",
-
-      overlay:
-        "bg-slate-900/15",
-
+        "bg-[#28345b]",
       card:
-        "bg-white/20 border border-white/30 backdrop-blur-2xl",
-
+        "bg-white/[0.09] border border-white/[0.16] backdrop-blur-2xl",
       nav:
-        "bg-black/30 border border-white/20 backdrop-blur-2xl",
-
+        "bg-black/[0.22] border border-white/[0.14] backdrop-blur-2xl",
       text:
         "text-white",
-
       secondary:
-        "text-white/80"
-
+        "text-white/65",
     },
 
-
-
-
-
     night: {
-
       background:
-        "from-indigo-950 via-purple-950 to-black",
-
-      overlay:
-        "bg-black/10",
-
+        "bg-[#070d18]",
       card:
-        "bg-white/10 border border-white/20 backdrop-blur-2xl",
-
+        "bg-white/[0.065] border border-white/[0.12] backdrop-blur-2xl",
       nav:
-        "bg-black/40 border border-white/20 backdrop-blur-2xl",
-
+        "bg-black/[0.32] border border-white/[0.11] backdrop-blur-2xl",
       text:
         "text-white",
-
       secondary:
-        "text-white/70"
-
-    }
-
-
+        "text-white/60",
+    },
   };
 
-
-
-
-
-
-
   return (
-
-
     <ThemeContext.Provider
-
-
       value={{
-
         theme,
-
         mode,
-
         setTheme,
-
-        styles: styles[theme]
-
+        styles: styles[theme],
       }}
-
-
     >
-
-
       {children}
-
-
     </ThemeContext.Provider>
-
-
   );
-
-
 }
 
-
-
-
-export function useTheme(){
-
-
+export function useTheme() {
   const context = useContext(ThemeContext);
 
-
-  if(!context){
-
-
+  if (!context) {
     throw new Error(
       "useTheme debe usarse dentro de ThemeProvider"
     );
-
-
   }
 
-
   return context;
-
-
 }
