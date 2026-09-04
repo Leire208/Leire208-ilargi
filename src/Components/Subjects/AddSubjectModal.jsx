@@ -43,6 +43,8 @@ function AddSubjectModal({
     } else {
       setForm(emptyForm);
     }
+
+    setSaving(false);
   }, [open, subject]);
 
   if (!open) return null;
@@ -80,7 +82,11 @@ function AddSubjectModal({
 
       close();
     } catch (error) {
-      console.error("Error guardando asignatura:", error);
+      console.error(
+        "Error guardando asignatura:",
+        error
+      );
+
       alert("No se pudo guardar la asignatura.");
     } finally {
       setSaving(false);
@@ -126,6 +132,7 @@ function AddSubjectModal({
           </h2>
 
           <button
+            type="button"
             onClick={close}
             className="
               w-9
@@ -253,7 +260,7 @@ function AddSubjectModal({
         {/* CUATRIMESTRE */}
 
         <label className="block text-white/70 text-sm mb-2">
-          Cuatrimestre
+          Periodo
         </label>
 
         <select
@@ -285,6 +292,13 @@ function AddSubjectModal({
           >
             2.º cuatrimestre
           </option>
+
+          <option
+            value="annual"
+            className="text-black"
+          >
+            Anual
+          </option>
         </select>
 
         {/* COLOR */}
@@ -302,6 +316,7 @@ function AddSubjectModal({
         {/* GUARDAR */}
 
         <button
+          type="button"
           onClick={save}
           disabled={saving}
           className="

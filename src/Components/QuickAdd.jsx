@@ -2,7 +2,8 @@ import {
   X,
   BookOpen,
   CalendarPlus,
-  ClipboardPlus
+  ClipboardPlus,
+  GraduationCap
 } from "lucide-react";
 
 import { useState } from "react";
@@ -10,334 +11,195 @@ import { useState } from "react";
 import AddSubjectModal from "./Subjects/AddSubjectModal";
 import AddTaskModal from "./Tasks/AddTaskModal";
 import AddEventModal from "./Calendar/AddEventModal";
-
-
+import AddClassModal from "./Schedule/AddClassModal";
 
 function QuickAdd({
-
   open,
-
   close
-
 }) {
-
-
   const [showSubject, setShowSubject] = useState(false);
-
   const [showEvent, setShowEvent] = useState(false);
-
   const [showTask, setShowTask] = useState(false);
+  const [showClass, setShowClass] = useState(false);
 
+  if (
+    !open &&
+    !showSubject &&
+    !showEvent &&
+    !showTask &&
+    !showClass
+  ) {
+    return null;
+  }
 
-
-
-
-
-  if(!open && !showSubject && !showEvent && !showTask) return null;
-
-
-
-
-
-
-
-  function openSubject(){
-
-
+  function openSubject() {
     close();
 
-
-    setTimeout(()=>{
-
-
+    setTimeout(() => {
       setShowSubject(true);
-
-
-    },100);
-
-
+    }, 100);
   }
 
-
-
-
-
-
-  function openEvent(){
-
-
+  function openEvent() {
     close();
 
-
-    setTimeout(()=>{
-
-
+    setTimeout(() => {
       setShowEvent(true);
-
-
-    },100);
-
-
+    }, 100);
   }
 
-
-
-
-
-
-
-  function openTask(){
-
-
+  function openTask() {
     close();
 
-
-    setTimeout(()=>{
-
-
+    setTimeout(() => {
       setShowTask(true);
-
-
-    },100);
-
-
+    }, 100);
   }
 
+  function openClass() {
+    close();
 
-
-
-
-
+    setTimeout(() => {
+      setShowClass(true);
+    }, 100);
+  }
 
   return (
-
     <>
-
-
-      {
-
-
-        open && (
-
-
-          <div
-
+      {open && (
+        <div
+          className="
+            fixed
+            inset-0
+            z-[100]
+            bg-black/40
+            backdrop-blur-sm
+            flex
+            items-end
+          "
+          onClick={close}
+        >
+          <section
+            onClick={(e) => e.stopPropagation()}
             className="
-              fixed
-              inset-0
-              z-[100]
-              bg-black/40
-              backdrop-blur-sm
-              flex
-              items-end
+              w-full
+              rounded-t-[40px]
+              bg-white/10
+              backdrop-blur-3xl
+              border-t
+              border-white/20
+              p-8
             "
-
-            onClick={close}
-
           >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl text-white font-bold">
+                Añadir
+              </h2>
 
+              <button onClick={close}>
+                <X className="text-white" />
+              </button>
+            </div>
 
-
-            <section
-
-              onClick={(e)=>e.stopPropagation()}
-
+            {/* NUEVO EVENTO */}
+            <button
+              onClick={openEvent}
               className="
                 w-full
-                rounded-t-[40px]
+                p-4
+                rounded-2xl
                 bg-white/10
-                backdrop-blur-3xl
-                border-t
-                border-white/20
-                p-8
+                text-white
+                flex
+                items-center
+                gap-4
+                mb-3
               "
-
             >
-
-
-
-
-              <div className="flex justify-between items-center mb-6">
-
-
-                <h2 className="text-2xl text-white font-bold">
-
-                  Añadir
-
-                </h2>
-
-
-
-                <button onClick={close}>
-
-                  <X className="text-white"/>
-
-                </button>
-
-
-              </div>
-
-
-
-
-
-
-
-              <button
-
-                onClick={openEvent}
-
-                className="
-                  w-full
-                  p-4
-                  rounded-2xl
-                  bg-white/10
-                  text-white
-                  flex
-                  items-center
-                  gap-4
-                  mb-3
-                "
-
-              >
-
-                <CalendarPlus/>
-
-                Nuevo evento
-
-              </button>
-
-
-
-
-
-
-
-              <button
-
-                onClick={openSubject}
-
-                className="
-                  w-full
-                  p-4
-                  rounded-2xl
-                  bg-white/10
-                  text-white
-                  flex
-                  items-center
-                  gap-4
-                  mb-3
-                "
-
-              >
-
-                <BookOpen/>
-
-                Nueva asignatura
-
-              </button>
-
-
-
-
-
-
-
-
-              <button
-
-                onClick={openTask}
-
-                className="
-                  w-full
-                  p-4
-                  rounded-2xl
-                  bg-white/10
-                  text-white
-                  flex
-                  items-center
-                  gap-4
-                "
-
-              >
-
-                <ClipboardPlus/>
-
-                Nueva tarea
-
-              </button>
-
-
-
-
-
-
-            </section>
-
-
-          </div>
-
-
-        )
-
-
-      }
-
-
-
-
-
-
-
+              <CalendarPlus />
+              Nuevo evento
+            </button>
+
+            {/* NUEVA ASIGNATURA */}
+            <button
+              onClick={openSubject}
+              className="
+                w-full
+                p-4
+                rounded-2xl
+                bg-white/10
+                text-white
+                flex
+                items-center
+                gap-4
+                mb-3
+              "
+            >
+              <BookOpen />
+              Nueva asignatura
+            </button>
+
+            {/* NUEVA CLASE */}
+            <button
+              onClick={openClass}
+              className="
+                w-full
+                p-4
+                rounded-2xl
+                bg-white/10
+                text-white
+                flex
+                items-center
+                gap-4
+                mb-3
+              "
+            >
+              <GraduationCap />
+              Nueva clase
+            </button>
+
+            {/* NUEVA TAREA */}
+            <button
+              onClick={openTask}
+              className="
+                w-full
+                p-4
+                rounded-2xl
+                bg-white/10
+                text-white
+                flex
+                items-center
+                gap-4
+              "
+            >
+              <ClipboardPlus />
+              Nueva tarea
+            </button>
+          </section>
+        </div>
+      )}
 
       <AddSubjectModal
-
         open={showSubject}
-
-        close={()=>setShowSubject(false)}
-
+        close={() => setShowSubject(false)}
       />
-
-
-
-
-
-
-
 
       <AddEventModal
-
         open={showEvent}
-
-        close={()=>setShowEvent(false)}
-
+        close={() => setShowEvent(false)}
       />
-
-
-
-
-
-
-
 
       <AddTaskModal
-
         open={showTask}
-
-        close={()=>setShowTask(false)}
-
+        close={() => setShowTask(false)}
       />
 
-
-
-
-
+      <AddClassModal
+        open={showClass}
+        close={() => setShowClass(false)}
+      />
     </>
-
-
   );
-
 }
-
 
 export default QuickAdd;

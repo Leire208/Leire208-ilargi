@@ -10,7 +10,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
-  onSnapshot,
+  getDocs,
   updateDoc,
 } from "firebase/firestore";
 
@@ -25,85 +25,78 @@ export function ScheduleProvider({ children }) {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /*
-   * Escucha Firebase en tiempo real.
-   *
-   * Esto hace que Horario y Calendario compartan
-   * exactamente las mismas clases.
-   */
-  useEffect(() => {
+  async function loadSchedule() {
     if (!currentUser) {
       setClasses([]);
       setLoading(false);
       return;
     }
 
-    setLoading(true);
+    try {
+      console.log(
+        "SCHEDULE: cargando clases..."
+      );
 
-    const ref = collection(
-      db,
-      "users",
-      currentUser.uid,
-      "schedule"
-    );
+      const ref = collection(
+        db,
+        "users",
+        currentUser.uid,
+        "schedule"
+      );
 
-    const unsubscribe = onSnapshot(
-      ref,
-      (snapshot) => {
-        const data = snapshot.docs
-          .map((item) => ({
-            id: item.id,
-            ...item.data(),
-          }))
-          .sort((a, b) => {
-            const dayOrder = {
-              L: 1,
-              M: 2,
-              X: 3,
-              J: 4,
-              V: 5,
-            };
+      const snapshot = await getDocs(ref);
 
-            const dayDifference =
-              (dayOrder[a.day] || 99) -
-              (dayOrder[b.day] || 99);
+      const data = snapshot.docs.map((item) => ({
+        id: item.id,
+        ...item.data(),
+      }));
 
-            if (dayDifference !== 0) {
-              return dayDifference;
-            }
+      console.log(
+        "SCHEDULE: clases encontradas:",
+        data
+      );
 
-            return (
-              timeToMinutes(a.start) -
-              timeToMinutes(b.start)
-            );
-          });
+      setClasses(data);
+    } catch (error) {
+      console.error(
+        "SCHEDULE: error cargando clases:",
+        error
+      );
 
-        setClasses(data);
-        setLoading(false);
-      },
-      (error) => {
-        console.error(
-          "Error escuchando el horario:",
-          error
-        );
+      setClasses([]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-        setClasses([]);
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
+  useEffect(() => {
+    loadSchedule();
   }, [currentUser]);
 
-  /*
-   * Añadir clase
-   */
   async function addClass(item) {
     if (!currentUser) {
       throw new Error(
-        "No hay ningún usuario autenticado."
+        "No hay usuario autenticado."
       );
     }
+
+    const newClass = {
+      day: item.day || "",
+      start: item.start || "",
+      end: item.end || "",
+      subjectId: item.subjectId || "",
+      subjectName:
+        item.subjectName || "",
+      color:
+        item.color || "#60a5fa",
+      room:
+        item.room || "",
+    };
+
+    console.log(
+      "SCHEDULE: preparando guardado",
+      newClass
+    );
 
     const ref = collection(
       db,
@@ -112,96 +105,121 @@ export function ScheduleProvider({ children }) {
       "schedule"
     );
 
-    const newClass = {
-      day: item.day,
-      start: item.start,
-      end:
-        item.end ||
-        getOneHourLater(item.start),
-      subjectId: item.subjectId,
-      subjectName: item.subjectName,
-      color:
-        item.color ||
-        "#60a5fa",
-      room:
-        item.room ||
-        "",
+    /*
+     * Ponemos un límite para que nunca
+     * se quede eternamente en "Guardando..."
+     */
+    const savePromise = addDoc(
+      ref,
+      newClass
+    );
+
+    const timeoutPromise = new Promise(
+      (_, reject) => {
+        setTimeout(() => {
+          reject(
+            new Error(
+              "Firebase tardó demasiado en guardar la clase."
+            )
+          );
+        }, 10000);
+      }
+    );
+
+    const result = await Promise.race([
+      savePromise,
+      timeoutPromise,
+    ]);
+
+    console.log(
+      "SCHEDULE: clase guardada en Firebase:",
+      result.id
+    );
+
+    const savedClass = {
+      id: result.id,
+      ...newClass,
     };
 
-    await addDoc(ref, newClass);
+    setClasses((prev) => [
+      ...prev,
+      savedClass,
+    ]);
 
-    /*
-     * NO hacemos setClasses aquí.
-     *
-     * onSnapshot actualizará automáticamente
-     * el estado cuando Firebase confirme
-     * la nueva clase.
-     */
+    console.log(
+      "SCHEDULE: clase añadida al estado:",
+      savedClass
+    );
+
+    return savedClass;
   }
 
-  /*
-   * Eliminar clase
-   */
   async function removeClass(id) {
     if (!currentUser) {
       throw new Error(
-        "No hay ningún usuario autenticado."
+        "No hay usuario autenticado."
       );
     }
 
     if (!id) {
       throw new Error(
-        "La clase no tiene un ID válido."
+        "La clase no tiene ID."
       );
     }
 
-    await deleteDoc(
-      doc(
-        db,
-        "users",
-        currentUser.uid,
-        "schedule",
-        id
-      )
+    const reference = doc(
+      db,
+      "users",
+      currentUser.uid,
+      "schedule",
+      id
     );
 
-    /*
-     * onSnapshot actualizará automáticamente
-     * Horario y Calendario.
-     */
+    await deleteDoc(reference);
+
+    setClasses((prev) =>
+      prev.filter(
+        (item) => item.id !== id
+      )
+    );
   }
 
-  /*
-   * Editar clase
-   */
   async function updateClass(id, data) {
     if (!currentUser) {
       throw new Error(
-        "No hay ningún usuario autenticado."
+        "No hay usuario autenticado."
       );
     }
 
     if (!id) {
       throw new Error(
-        "La clase no tiene un ID válido."
+        "La clase no tiene ID."
       );
     }
 
+    const reference = doc(
+      db,
+      "users",
+      currentUser.uid,
+      "schedule",
+      id
+    );
+
     await updateDoc(
-      doc(
-        db,
-        "users",
-        currentUser.uid,
-        "schedule",
-        id
-      ),
+      reference,
       data
     );
 
-    /*
-     * onSnapshot actualizará automáticamente
-     * ambos sitios.
-     */
+    setClasses((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              ...data,
+            }
+          : item
+      )
+    );
   }
 
   return (
@@ -212,6 +230,7 @@ export function ScheduleProvider({ children }) {
         addClass,
         removeClass,
         updateClass,
+        loadSchedule,
       }}
     >
       {!loading && children}
@@ -230,42 +249,6 @@ export function useSchedule() {
   }
 
   return context;
-}
-
-/* ================================= */
-/* HELPERS                           */
-/* ================================= */
-
-function timeToMinutes(time) {
-  if (!time) return 0;
-
-  const [hours, minutes] =
-    time.split(":").map(Number);
-
-  return hours * 60 + minutes;
-}
-
-function getOneHourLater(time) {
-  if (!time) return "09:00";
-
-  const [hours, minutes] =
-    time.split(":").map(Number);
-
-  const total =
-    hours * 60 +
-    minutes +
-    60;
-
-  const finalHours =
-    Math.floor(total / 60) % 24;
-
-  const finalMinutes =
-    total % 60;
-
-  return [
-    String(finalHours).padStart(2, "0"),
-    String(finalMinutes).padStart(2, "0"),
-  ].join(":");
 }
 
 export default ScheduleContext;

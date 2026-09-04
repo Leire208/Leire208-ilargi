@@ -15,6 +15,8 @@ import { UserProvider } from "./Context/UserContext.jsx";
 
 import { SubjectProvider } from "./Context/SubjectContext.jsx";
 import { TaskProvider } from "./Context/TaskContext.jsx";
+import { WorkProvider } from "./Context/WorkContext.jsx";
+import { ExamProvider } from "./Context/ExamContext.jsx";
 import { EventProvider } from "./Context/EventContext.jsx";
 
 import { NotificationProvider } from "./Context/NotificationContext.jsx";
@@ -35,23 +37,31 @@ ReactDOM.createRoot(
 
               <UserProvider>
                 <SubjectProvider>
+
                   <TaskProvider>
-                    <EventProvider>
+                    <WorkProvider>
+                      <ExamProvider>
 
-                      <NotificationProvider>
+                        <EventProvider>
 
-                        <ScheduleProvider>
-                          <DashboardProvider>
+                          <NotificationProvider>
 
-                            <App />
+                            <ScheduleProvider>
+                              <DashboardProvider>
 
-                          </DashboardProvider>
-                        </ScheduleProvider>
+                                <App />
 
-                      </NotificationProvider>
+                              </DashboardProvider>
+                            </ScheduleProvider>
 
-                    </EventProvider>
+                          </NotificationProvider>
+
+                        </EventProvider>
+
+                      </ExamProvider>
+                    </WorkProvider>
                   </TaskProvider>
+
                 </SubjectProvider>
               </UserProvider>
 
